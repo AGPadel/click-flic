@@ -340,12 +340,48 @@ input {
 }
 
 @media (max-width: 760px) {
-  .form-grid,
-  .audio-grid,
-  .control-buttons {
+
+  .view-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
   }
 
+  .team-panel {
+    min-height: 45vh;
+  }
+
+  .big-score {
+    font-size: 7rem;
+  }
+
+  .team-players {
+    font-size: 13px;
+  }
+
+  .games-number {
+    font-size: 28px;
+  }
+
+  .center-box {
+    padding: 10px 14px;
+    min-width: 120px;
+  }
+
+  .center-games {
+    font-size: 28px;
+  }
+
+  .center-sets {
+    font-size: 18px;
+  }
+
+  .service-pill {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+}
   .view-grid {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
