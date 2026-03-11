@@ -482,3 +482,23 @@ input {
     font-size: 20px;
   }
 }
+
+.tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 5;
+}
+
+.tap-zone-left {
+  left: 0;
+}
+
+.tap-zone-right {
+  right: 0;
+}
+
+.center-box-touch {
+  z-index: 30;
+}

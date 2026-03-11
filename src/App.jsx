@@ -357,38 +357,35 @@ function ViewMode({ state, scorePoint, undo }) {
 
   return (
     <div className="view-page">
-
       <div className="view-grid">
+        <div className="tap-zone tap-zone-left" onClick={() => scorePoint(1)} />
+        <div className="tap-zone tap-zone-right" onClick={() => scorePoint(2)} />
 
-        <div onClick={() => scorePoint(1)}>
-          <TeamPanel
-            name={state.team1Name}
-            players={[state.player1A, state.player1B]}
-            pointsSelf={state.points1}
-            pointsOther={state.points2}
-            games={state.games1}
-            sets={state.sets1}
-            accentClass="blue-score"
-            active={state.server === 1}
-            goldenPoint={state.goldenPoint}
-          />
-        </div>
+        <TeamPanel
+          name={state.team1Name}
+          players={[state.player1A, state.player1B]}
+          pointsSelf={state.points1}
+          pointsOther={state.points2}
+          games={state.games1}
+          sets={state.sets1}
+          accentClass="blue-score"
+          active={state.server === 1}
+          goldenPoint={state.goldenPoint}
+        />
 
-        <div onClick={() => scorePoint(2)}>
-          <TeamPanel
-            name={state.team2Name}
-            players={[state.player2A, state.player2B]}
-            pointsSelf={state.points2}
-            pointsOther={state.points1}
-            games={state.games2}
-            sets={state.sets2}
-            accentClass="red-score"
-            active={state.server === 2}
-            goldenPoint={state.goldenPoint}
-          />
-        </div>
+        <TeamPanel
+          name={state.team2Name}
+          players={[state.player2A, state.player2B]}
+          pointsSelf={state.points2}
+          pointsOther={state.points1}
+          games={state.games2}
+          sets={state.sets2}
+          accentClass="red-score"
+          active={state.server === 2}
+          goldenPoint={state.goldenPoint}
+        />
 
-        <div className="center-box" onDoubleClick={undo}>
+        <div className="center-box center-box-touch" onDoubleClick={undo}>
           <div className="center-title">MARCADOR</div>
           <div className="center-time">TIEMPO {minutes}:{seconds}</div>
 
@@ -404,9 +401,7 @@ function ViewMode({ state, scorePoint, undo }) {
             <span>{state.sets2}</span>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 }
