@@ -2,8 +2,15 @@
   box-sizing: border-box;
 }
 
-body {
+html,
+body,
+#root {
   margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
   font-family: Arial, sans-serif;
   background: #f3f5f7;
   color: #1f2937;
@@ -229,6 +236,7 @@ input {
   padding: 24px 36px;
   text-align: center;
   min-width: 230px;
+  z-index: 10;
 }
 
 .center-title {
@@ -340,67 +348,136 @@ input {
 }
 
 @media (max-width: 760px) {
+  .start-wrap,
+  .control-page {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .form-grid,
+  .audio-grid,
+  .control-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .view-page {
+    height: 100dvh;
+    padding: 6px;
+  }
 
   .view-grid {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 6px;
+    height: 100%;
   }
 
   .team-panel {
-    min-height: 45vh;
+    min-height: 0;
+    height: calc(50dvh - 9px);
+    border-radius: 24px;
   }
 
-  .big-score {
-    font-size: 7rem;
+  .team-top {
+    top: 14px;
+    width: 92%;
+  }
+
+  .team-name {
+    font-size: 9px;
+    letter-spacing: 0.22em;
   }
 
   .team-players {
+    margin-top: 6px;
+    padding: 6px 12px;
     font-size: 13px;
-  }
-
-  .games-number {
-    font-size: 28px;
-  }
-
-  .center-box {
-    padding: 10px 14px;
-    min-width: 120px;
-  }
-
-  .center-games {
-    font-size: 28px;
-  }
-
-  .center-sets {
-    font-size: 18px;
+    line-height: 1.2;
+    max-width: 92%;
+    white-space: normal;
+    border-radius: 14px;
   }
 
   .service-pill {
-    font-size: 10px;
+    top: 12px;
+    left: 12px;
     padding: 6px 10px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
   }
 
-}
-  .view-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-  }
-
-  .center-box {
-    padding: 16px 20px;
-    min-width: 180px;
+  .sets-badge {
+    top: 12px;
+    right: 12px;
+    padding: 6px 10px;
+    font-size: 10px;
   }
 
   .big-score {
-    font-size: 10rem;
+    font-size: 8.5rem;
+    margin-top: 18px;
   }
 
-  .team-players {
-    font-size: 14px;
+  .team-bottom {
+    bottom: 10px;
   }
 
   .games-number {
-    font-size: 34px;
+    font-size: 28px;
+  }
+
+  .games-label {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+  }
+
+  .center-box {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 128px;
+    padding: 10px 12px;
+    border-radius: 18px;
+    z-index: 20;
+  }
+
+  .center-title {
+    font-size: 8px;
+    letter-spacing: 0.18em;
+  }
+
+  .center-time {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .center-games {
+    margin-top: 8px;
+    gap: 10px;
+    font-size: 24px;
+  }
+
+  .center-sets {
+    margin-top: 4px;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .row-buttons {
+    flex-direction: column;
+  }
+
+  .btn,
+  .btn.full {
+    width: 100%;
+  }
+
+  .big-btn {
+    min-height: 78px;
+    font-size: 20px;
   }
 }
