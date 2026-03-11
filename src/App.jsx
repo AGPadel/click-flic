@@ -340,7 +340,7 @@ function StartScreen({ startMatch }) {
   );
 }
 
-ffunction ViewMode({ state, scorePoint, undo }) {
+function ViewMode({ state, scorePoint, undo }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
