@@ -433,15 +433,14 @@ function ViewMode({ state, undo }) {
             <span>{state.sets2}</span>
           </div>
 
-          <button
-            className="undo-gold-pill"
-            onClick={undo}
-            title="Deshacer último punto"
-            aria-label="Deshacer último punto"
+		 <button
+            className="undo-bottom"
+			onClick={undo}
           >
             <UndoArrowIcon />
-            <span>Deshacer</span>
-          </button>
+            Deshacer
+          </button> 
+		  
         </div>
       </div>
     </div>
