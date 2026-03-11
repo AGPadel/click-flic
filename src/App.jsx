@@ -324,7 +324,7 @@ function StartScreen({ startMatch }) {
   );
 }
 
-function ViewMode({ state }) {
+function ViewMode({ state, undo }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -385,7 +385,7 @@ function ViewMode({ state }) {
         </div>
 
         <button
-          onClick={()=>window.dispatchEvent(new CustomEvent("padelUndo"))}
+          onClick={undo}
           className="absolute left-1/2 bottom-6 -translate-x-1/2 flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/80 px-4 py-2 text-sm font-semibold text-amber-800 shadow-lg backdrop-blur hover:bg-amber-200 transition"
         >
           <RotateCcw className="h-4 w-4" />
@@ -479,5 +479,5 @@ export default function PadelScorePrototype() {
 
   if(mode==="control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo}/>;
 
-  return <ViewMode state={state}/>;
+  return <ViewMode state={state} undo={undo}/>;
 }
