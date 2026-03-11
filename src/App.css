@@ -444,7 +444,7 @@ input {
     padding: 8px 10px;
     border-radius: 16px;
     z-index: 20;
-}
+  }
 
   .center-title {
     font-size: 7px;
@@ -480,86 +480,5 @@ input {
   .big-btn {
     min-height: 78px;
     font-size: 20px;
-  }
-}
-
-.tap-zone {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  z-index: 5;
-}
-
-.tap-zone-left {
-  left: 0;
-}
-
-.tap-zone-right {
-  right: 0;
-}
-
-.center-box-touch {
-  z-index: 30;
-}
-.tap-zone {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  z-index: 5;
-}
-
-.tap-zone-left {
-  left: 0;
-}
-
-.tap-zone-right {
-  right: 0;
-}
-
-.center-box-touch {
-  z-index: 30;
-  position: absolute;
-}
-
-.undo-fab {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #d7dde5;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-}
-
-.undo-fab:hover {
-  background: #ffffff;
-  color: #334155;
-}
-
-.undo-icon {
-  width: 16px;
-  height: 16px;
-}
-
-@media (max-width: 760px) {
-  .undo-fab {
-    width: 30px;
-    height: 30px;
-    right: 8px;
-    bottom: 8px;
-  }
-
-  .undo-icon {
-    width: 14px;
-    height: 14px;
   }
 }
