@@ -401,9 +401,26 @@ function ViewMode({ state, scorePoint, undo }) {
             <span>{state.sets2}</span>
           </div>
 
-          <button className="undo-fab" onClick={undo} title="Deshacer último punto">
-            ↶
-          </button>
+          <button className="undo-fab" onClick={undo} title="Deshacer último punto" aria-label="Deshacer último punto">
+  	    <svg viewBox="0 0 24 24" className="undo-icon" aria-hidden="true">
+              <path
+                d="M9 7H5v4"
+     		fill="none"
+      		stroke="currentColor"
+      		strokeWidth="2"
+      		strokeLinecap="round"
+      		strokeLinejoin="round"
+    	      />
+              <path
+                d="M5 11c1.8-3.6 5-5.5 8.6-5.5 4.6 0 8.4 3.5 8.4 8s-3.8 8-8.4 8c-2.3 0-4.4-.8-6-2.2"
+      		fill="none"
+      		stroke="currentColor"
+      		strokeWidth="2"
+      		strokeLinecap="round"
+      		strokeLinejoin="round"
+    	       />
+             </svg>
+           </button>
         </div>
       </div>
     </div>
