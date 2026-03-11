@@ -385,7 +385,7 @@ function ViewMode({ state, scorePoint, undo }) {
           goldenPoint={state.goldenPoint}
         />
 
-        <div className="center-box center-box-touch" onDoubleClick={undo}>
+        <div className="center-box center-box-touch">
           <div className="center-title">MARCADOR</div>
           <div className="center-time">TIEMPO {minutes}:{seconds}</div>
 
@@ -400,6 +400,10 @@ function ViewMode({ state, scorePoint, undo }) {
             <span>-</span>
             <span>{state.sets2}</span>
           </div>
+
+          <button className="undo-fab" onClick={undo} title="Deshacer último punto">
+            ↶
+          </button>
         </div>
       </div>
     </div>

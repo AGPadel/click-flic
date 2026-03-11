@@ -502,3 +502,50 @@ input {
 .center-box-touch {
   z-index: 30;
 }
+.tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 5;
+}
+
+.tap-zone-left {
+  left: 0;
+}
+
+.tap-zone-right {
+  right: 0;
+}
+
+.center-box-touch {
+  z-index: 30;
+  position: absolute;
+}
+
+.undo-fab {
+  position: absolute;
+  right: -12px;
+  top: -12px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: #111827;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
+}
+
+@media (max-width: 760px) {
+  .undo-fab {
+    width: 34px;
+    height: 34px;
+    right: -8px;
+    top: -8px;
+    font-size: 18px;
+  }
+}
