@@ -1,42 +1,370 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f5f7;
+  color: #1f2937;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button,
+input {
+  font: inherit;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.start-wrap,
+.control-page {
+  min-height: 100vh;
+  background: #f3f5f7;
+  padding: 24px;
+}
+
+.start-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card {
-  padding: 2em;
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px;
 }
 
-.read-the-docs {
-  color: #888;
+.start-card {
+  width: 100%;
+  max-width: 860px;
+}
+
+.start-card h1,
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0 22px;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #d7dde5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.section-title {
+  margin: 18px 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.row-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 1px solid #d7dde5;
+  background: #fff;
+  color: #1f2937;
+  padding: 12px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+.btn.full {
+  width: 100%;
+  margin-top: 24px;
+  padding: 16px;
+  font-weight: 700;
+}
+
+.view-page {
+  height: 100vh;
+  background: #f3f5f7;
+  padding: 8px;
+}
+
+.view-grid {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.team-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  border: 2px solid #dce2e8;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-panel.service-active {
+  border-color: #d4a017;
+  box-shadow: 0 0 0 8px rgba(212, 160, 23, 0.28), 0 20px 40px rgba(212, 160, 23, 0.18);
+}
+
+.team-top {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 90%;
+}
+
+.team-name {
+  font-size: 11px;
+  color: #9ca3af;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.team-players {
+  margin-top: 10px;
+  display: inline-block;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #475569;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.service-pill {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: #d4a017;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  box-shadow: 0 8px 20px rgba(212, 160, 23, 0.35);
+}
+
+.big-score {
+  font-size: 22rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+}
+
+.blue-score {
+  color: #223f6b;
+}
+
+.red-score {
+  color: #8f1717;
+}
+
+.team-bottom {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.games-number {
+  font-size: 42px;
+  color: #94a3b8;
+  font-weight: 900;
+}
+
+.games-label {
+  font-size: 11px;
+  color: #cbd5e1;
+  letter-spacing: 0.4em;
+}
+
+.sets-badge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  border: 1px solid #d7dde5;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #475569;
+  background: white;
+}
+
+.center-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dde3ea;
+  border-radius: 28px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  padding: 24px 36px;
+  text-align: center;
+  min-width: 230px;
+}
+
+.center-title {
+  font-size: 11px;
+  color: #94a3b8;
+  letter-spacing: 0.35em;
+}
+
+.center-time {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.center-games {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 48px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.center-sets {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.control-grid {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 20px;
+}
+
+.control-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.big-btn {
+  min-height: 110px;
+  border: 0;
+  border-radius: 22px;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.blue-btn {
+  background: #223f6b;
+  color: white;
+}
+
+.red-btn {
+  background: #8f1717;
+  color: white;
+}
+
+.gray-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.audio-box {
+  margin-top: 22px;
+  background: #f8fafc;
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.audio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.url-box,
+.note-box {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 14px;
+  word-break: break-all;
+}
+
+.note-box {
+  border: 1px dashed #cbd5e1;
+  color: #475569;
+}
+
+@media (max-width: 1100px) {
+  .big-score {
+    font-size: 15rem;
+  }
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .form-grid,
+  .audio-grid,
+  .control-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .view-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .center-box {
+    padding: 16px 20px;
+    min-width: 180px;
+  }
+
+  .big-score {
+    font-size: 10rem;
+  }
+
+  .team-players {
+    font-size: 14px;
+  }
+
+  .games-number {
+    font-size: 34px;
+  }
 }
