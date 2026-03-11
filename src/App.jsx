@@ -138,15 +138,9 @@ function buildAnnouncement(nextState, type = "point") {
   const serverPoints = serverIsTeam1 ? nextState.points1 : nextState.points2;
   const receiverPoints = serverIsTeam1 ? nextState.points2 : nextState.points1;
 
-  if (type === "match") {
-    return `Juego, set y partido para ${nextState.winnerLabel}`;
-  }
-  if (type === "set") {
-    return `Set para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
-  }
-  if (type === "game") {
-    return `Juego para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
-  }
+  if (type === "match") return `Juego, set y partido para ${nextState.winnerLabel}`;
+  if (type === "set") return `Set para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
+  if (type === "game") return `Juego para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
 
   return pointCall(serverPoints, receiverPoints, nextState.goldenPoint);
 }
@@ -494,7 +488,7 @@ export default function App() {
     params.delete("action");
     const nextUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, "", nextUrl);
-  }, [action, state.started]);
+  }, [action, state.started, scorePoint, undo]);
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
