@@ -368,29 +368,29 @@ function ViewMode({ state, undo }) {
         />
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="bg-white px-10 py-6 rounded-3xl shadow-xl border">
-            <div className="text-center text-xs tracking-[0.4em] text-slate-400">MARCADOR</div>
-            <div className="mt-2 text-center text-xs font-bold text-slate-500">TIEMPO {minutes}:{seconds}</div>
-            <div className="flex justify-center gap-6 text-4xl font-black mt-3">
-              <span>{state.games1}</span>
-              <span>-</span>
-              <span>{state.games2}</span>
-            </div>
-            <div className="flex justify-center gap-6 text-xl mt-2">
-              <span>{state.sets1}</span>
-              <span>-</span>
-              <span>{state.sets2}</span>
-            </div>
-          </div>
-        </div>
+  <div className="relative bg-white px-10 py-6 rounded-3xl shadow-xl border">
+    <div className="text-center text-xs tracking-[0.4em] text-slate-400">MARCADOR</div>
+    <div className="mt-2 text-center text-xs font-bold text-slate-500">TIEMPO {minutes}:{seconds}</div>
+    <div className="flex justify-center gap-6 text-4xl font-black mt-3">
+      <span>{state.games1}</span>
+      <span>-</span>
+      <span>{state.games2}</span>
+    </div>
+    <div className="flex justify-center gap-6 text-xl mt-2">
+      <span>{state.sets1}</span>
+      <span>-</span>
+      <span>{state.sets2}</span>
+    </div>
 
-        <button
-          onClick={undo}
-          className="absolute left-1/2 bottom-6 -translate-x-1/2 flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/80 px-4 py-2 text-sm font-semibold text-amber-800 shadow-lg backdrop-blur hover:bg-amber-200 transition"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Deshacer
-        </button>
+    <button
+      onClick={undo}
+      className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/90 px-4 py-2 text-sm font-semibold text-amber-800 shadow-lg backdrop-blur hover:bg-amber-200 transition"
+    >
+      <RotateCcw className="h-4 w-4" />
+      Deshacer
+    </button>
+  </div>
+</div>
 
       </div>
     </div>
