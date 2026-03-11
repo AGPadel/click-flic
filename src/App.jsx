@@ -212,7 +212,13 @@ function useMatchState(matchId) {
     let type = "point";
 
     if (pointResult.gameWinner) {
-      const setResult = resolveSet(state.games1, state.games2, state.sets1, state.sets2, pointResult.gameWinner);
+      const setResult = resolveSet(
+        state.games1,
+        state.games2,
+        state.sets1,
+        state.sets2,
+        pointResult.gameWinner
+      );
 
       next = {
         ...next,
@@ -428,7 +434,7 @@ function ViewMode({ state, undo }) {
           </div>
 
           <button
-            className="undo-gold-button"
+            className="undo-gold-pill"
             onClick={undo}
             title="Deshacer último punto"
             aria-label="Deshacer último punto"

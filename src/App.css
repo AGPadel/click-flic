@@ -482,3 +482,47 @@ input {
     font-size: 20px;
   }
 }
+
+.undo-gold-pill {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #d4a017;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(212, 160, 23, 0.32);
+}
+
+.undo-gold-pill:hover {
+  filter: brightness(1.05);
+}
+
+.undo-inline-icon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 760px) {
+  .undo-gold-pill {
+    bottom: -14px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 10px;
+    gap: 6px;
+  }
+
+  .undo-inline-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
