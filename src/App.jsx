@@ -432,21 +432,21 @@ function ViewMode({ state, undo }) {
             <span>-</span>
             <span>{state.sets2}</span>
           </div>
-
-		 <button
-            className="undo-bottom"
-			onClick={undo}
-          >
-            <UndoArrowIcon />
-            Deshacer
-          </button> 
-		  
         </div>
+
+        <button
+          className="undo-bottom"
+          onClick={undo}
+          title="Deshacer último punto"
+          aria-label="Deshacer último punto"
+        >
+          <UndoArrowIcon />
+          <span>Deshacer</span>
+        </button>
       </div>
     </div>
   );
 }
-
 function ControlMode({ state, scorePoint, undo, reset }) {
   const action1Url = `${window.location.origin}${window.location.pathname}?id=pista1&mode=control&action=team1`;
   const action2Url = `${window.location.origin}${window.location.pathname}?id=pista1&mode=control&action=team2`;
