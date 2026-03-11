@@ -5,7 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Undo2, RotateCcw, Link2, Smartphone, Tv, Trophy, Settings2, Volume2, PlayCircle } from "lucide-react";
+import {
+  Undo2,
+  RotateCcw,
+  Link2,
+  Smartphone,
+  Tv,
+  Trophy,
+  Settings2,
+  Volume2,
+  PlayCircle,
+} from "lucide-react";
 
 const POINT_LABELS = ["0", "15", "30", "40"];
 
@@ -258,15 +268,15 @@ function TeamPanel({ name, players = [], pointsSelf, pointsOther, games, sets, a
       </div>
 
       <div className="absolute top-10 right-10">
-        <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">SETS {sets}</Badge>
+        <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">
+          SETS {sets}
+        </Badge>
       </div>
     </div>
   );
 }
 
 function StartScreen({ startMatch }) {
-  const [team1, setTeam1] = useState("");
-  const [team2, setTeam2] = useState("");
   const [p1a, setP1a] = useState("");
   const [p1b, setP1b] = useState("");
   const [p2a, setP2a] = useState("");
@@ -282,39 +292,47 @@ function StartScreen({ startMatch }) {
             <PlayCircle /> Iniciar partido
           </div>
 
-          
-
           <div className="grid md:grid-cols-2 gap-4">
-            <Input placeholder="Jugador 1 pareja 1" value={p1a} onChange={(e)=>setP1a(e.target.value)} />
-            <Input placeholder="Jugador 2 pareja 1" value={p1b} onChange={(e)=>setP1b(e.target.value)} />
-            <Input placeholder="Jugador 1 pareja 2" value={p2a} onChange={(e)=>setP2a(e.target.value)} />
-            <Input placeholder="Jugador 2 pareja 2" value={p2b} onChange={(e)=>setP2b(e.target.value)} />
+            <Input placeholder="Jugador 1 pareja 1" value={p1a} onChange={(e) => setP1a(e.target.value)} />
+            <Input placeholder="Jugador 2 pareja 1" value={p1b} onChange={(e) => setP1b(e.target.value)} />
+            <Input placeholder="Jugador 1 pareja 2" value={p2a} onChange={(e) => setP2a(e.target.value)} />
+            <Input placeholder="Jugador 2 pareja 2" value={p2b} onChange={(e) => setP2b(e.target.value)} />
           </div>
 
           <Separator />
 
           <div className="flex gap-4">
-            <Button variant={server===1?"default":"outline"} onClick={()=>setServer(1)}>Saca pareja 1</Button>
-            <Button variant={server===2?"default":"outline"} onClick={()=>setServer(2)}>Saca pareja 2</Button>
+            <Button variant={server === 1 ? "default" : "outline"} onClick={() => setServer(1)}>
+              Saca pareja 1
+            </Button>
+            <Button variant={server === 2 ? "default" : "outline"} onClick={() => setServer(2)}>
+              Saca pareja 2
+            </Button>
           </div>
 
           <div className="flex gap-4">
-            <Button variant={golden?"default":"outline"} onClick={()=>setGolden(true)}>Punto de oro</Button>
-            <Button variant={!golden?"default":"outline"} onClick={()=>setGolden(false)}>Ventaja</Button>
+            <Button variant={golden ? "default" : "outline"} onClick={() => setGolden(true)}>
+              Punto de oro
+            </Button>
+            <Button variant={!golden ? "default" : "outline"} onClick={() => setGolden(false)}>
+              Ventaja
+            </Button>
           </div>
 
           <Button
             className="w-full h-14 text-lg font-black"
-            onClick={()=>startMatch({
-              team1Name: (p1a || "Jugador 1") + " / " + (p1b || "Jugador 2"),
-              team2Name: (p2a || "Jugador 3") + " / " + (p2b || "Jugador 4"),
-              player1A:p1a,
-              player1B:p1b,
-              player2A:p2a,
-              player2B:p2b,
-              server,
-              goldenPoint:golden
-            })}
+            onClick={() =>
+              startMatch({
+                team1Name: (p1a || "Jugador 1") + " / " + (p1b || "Jugador 2"),
+                team2Name: (p2a || "Jugador 3") + " / " + (p2b || "Jugador 4"),
+                player1A: p1a,
+                player1B: p1b,
+                player2A: p2a,
+                player2B: p2b,
+                server,
+                goldenPoint: golden,
+              })
+            }
           >
             Comenzar partido
           </Button>
@@ -342,7 +360,6 @@ function ViewMode({ state, undo }) {
   return (
     <div className="h-screen w-full bg-slate-100 p-2 md:p-3">
       <div className="relative grid h-full grid-cols-2 gap-2">
-
         <TeamPanel
           name={state.team1Name}
           players={[state.player1A, state.player1B]}
@@ -351,7 +368,7 @@ function ViewMode({ state, undo }) {
           games={state.games1}
           sets={state.sets1}
           accent="text-slate-800"
-          active={state.server===1}
+          active={state.server === 1}
           goldenPoint={state.goldenPoint}
         />
 
@@ -363,35 +380,37 @@ function ViewMode({ state, undo }) {
           games={state.games2}
           sets={state.sets2}
           accent="text-rose-800"
-          active={state.server===2}
+          active={state.server === 2}
           goldenPoint={state.goldenPoint}
         />
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-  <div className="relative bg-white px-10 py-6 rounded-3xl shadow-xl border">
-    <div className="text-center text-xs tracking-[0.4em] text-slate-400">MARCADOR</div>
-    <div className="mt-2 text-center text-xs font-bold text-slate-500">TIEMPO {minutes}:{seconds}</div>
-    <div className="flex justify-center gap-6 text-4xl font-black mt-3">
-      <span>{state.games1}</span>
-      <span>-</span>
-      <span>{state.games2}</span>
-    </div>
-    <div className="flex justify-center gap-6 text-xl mt-2">
-      <span>{state.sets1}</span>
-      <span>-</span>
-      <span>{state.sets2}</span>
-    </div>
+          <div className="relative bg-white px-10 py-6 rounded-3xl shadow-xl border">
+            <div className="text-center text-xs tracking-[0.4em] text-slate-400">MARCADOR</div>
+            <div className="mt-2 text-center text-xs font-bold text-slate-500">TIEMPO {minutes}:{seconds}</div>
 
-    <button
-      onClick={undo}
-      className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/90 px-4 py-2 text-sm font-semibold text-amber-800 shadow-lg backdrop-blur hover:bg-amber-200 transition"
-    >
-      <RotateCcw className="h-4 w-4" />
-      Deshacer
-    </button>
-  </div>
-</div>
+            <div className="flex justify-center gap-6 text-4xl font-black mt-3">
+              <span>{state.games1}</span>
+              <span>-</span>
+              <span>{state.games2}</span>
+            </div>
 
+            <div className="flex justify-center gap-6 text-xl mt-2">
+              <span>{state.sets1}</span>
+              <span>-</span>
+              <span>{state.sets2}</span>
+            </div>
+
+            <button
+              onClick={undo}
+              className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/90 px-4 py-2 text-sm font-semibold text-amber-800 shadow-lg backdrop-blur hover:bg-amber-200 transition"
+              title="Deshacer último punto"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Deshacer
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -409,20 +428,40 @@ function ControlMode({ state, scorePoint, undo }) {
           <CardContent className="p-6">
             <div className="mb-4 text-2xl font-black">Control del partido</div>
             <div className="flex flex-wrap gap-6">
-              <Button className="h-32 w-56 text-2xl" onClick={()=>scorePoint(1)}>+ Punto {state.team1Name}</Button>
-              <Button className="h-32 w-56 text-2xl" onClick={()=>scorePoint(2)}>+ Punto {state.team2Name}</Button>
-              <Button className="h-32 w-40" variant="secondary" onClick={undo}><Undo2/></Button>
+              <Button className="h-32 w-56 text-2xl" onClick={() => scorePoint(1)}>
+                + Punto {state.team1Name}
+              </Button>
+              <Button className="h-32 w-56 text-2xl" onClick={() => scorePoint(2)}>
+                + Punto {state.team2Name}
+              </Button>
+              <Button className="h-32 w-40" variant="secondary" onClick={undo}>
+                <Undo2 />
+              </Button>
             </div>
 
             <div className="mt-8 rounded-2xl bg-slate-50 p-4">
-              <div className="mb-3 flex items-center gap-2 text-lg font-black"><Volume2 className="h-5 w-5" /> Demo de audio</div>
+              <div className="mb-3 flex items-center gap-2 text-lg font-black">
+                <Volume2 className="h-5 w-5" /> Demo de audio
+              </div>
               <div className="grid gap-3 md:grid-cols-2">
-                <Button variant="outline" onClick={()=>speakText("Quince nada", true)}>Probar "Quince nada"</Button>
-                <Button variant="outline" onClick={()=>speakText("Treinta iguales", true)}>Probar "Treinta iguales"</Button>
-                <Button variant="outline" onClick={()=>speakText("Ventaja servicio", true)}>Probar "Ventaja servicio"</Button>
-                <Button variant="outline" onClick={()=>speakText("Punto de oro", true)}>Probar "Punto de oro"</Button>
-                <Button variant="outline" onClick={()=>speakText(`Juego para ${state.team1Name}`, true)}>Probar juego pareja 1</Button>
-                <Button variant="outline" onClick={()=>speakText(`Juego, set y partido para ${state.team2Name}`, true)}>Probar final de partido</Button>
+                <Button variant="outline" onClick={() => speakText("Quince nada", true)}>
+                  Probar "Quince nada"
+                </Button>
+                <Button variant="outline" onClick={() => speakText("Treinta iguales", true)}>
+                  Probar "Treinta iguales"
+                </Button>
+                <Button variant="outline" onClick={() => speakText("Ventaja servicio", true)}>
+                  Probar "Ventaja servicio"
+                </Button>
+                <Button variant="outline" onClick={() => speakText("Punto de oro", true)}>
+                  Probar "Punto de oro"
+                </Button>
+                <Button variant="outline" onClick={() => speakText(`Juego para ${state.team1Name}`, true)}>
+                  Probar juego pareja 1
+                </Button>
+                <Button variant="outline" onClick={() => speakText(`Juego, set y partido para ${state.team2Name}`, true)}>
+                  Probar final de partido
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -459,9 +498,9 @@ export default function PadelScorePrototype() {
   const { matchId, mode, action } = parseMode();
   const { state, startMatch, scorePoint, undo } = useMatchState(matchId);
 
-  useEffect(()=>{
-    if(state.lastAnnouncement) speakText(state.lastAnnouncement,state.voiceEnabled);
-  },[state.lastAnnouncement]);
+  useEffect(() => {
+    if (state.lastAnnouncement) speakText(state.lastAnnouncement, state.voiceEnabled);
+  }, [state.lastAnnouncement]);
 
   useEffect(() => {
     if (!state.started || !action) return;
@@ -475,9 +514,9 @@ export default function PadelScorePrototype() {
     window.history.replaceState({}, "", nextUrl);
   }, [action, state.started]);
 
-  if(!state.started) return <StartScreen startMatch={startMatch}/>;
+  if (!state.started) return <StartScreen startMatch={startMatch} />;
 
-  if(mode==="control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo}/>;
+  if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} />;
 
-  return <ViewMode state={state} undo={undo}/>;
+  return <ViewMode state={state} undo={undo} />;
 }
