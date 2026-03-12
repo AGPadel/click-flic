@@ -190,6 +190,29 @@ function useMatchState(matchId) {
     if (historyRef.current.length > 100) historyRef.current.shift();
   };
 
+useEffect(() => {
+  const enableFullscreen = async () => {
+    try {
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch (e) {
+      // algunos navegadores móviles bloquean esto si no hay gesto del usuario
+    }
+  };
+
+  const handleFirstTouch = () => {
+    enableFullscreen();
+    window.removeEventListener("touchstart", handleFirstTouch);
+  };
+
+  window.addEventListener("touchstart", handleFirstTouch, { once: true });
+
+  return () => {
+    window.removeEventListener("touchstart", handleFirstTouch);
+  };
+}, []);
+
   const save = (next) => setState({ ...next, updatedAt: Date.now() });
 
   const startMatch = (config) => {
