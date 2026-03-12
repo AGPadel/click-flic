@@ -27,12 +27,13 @@ function emptyState() {
     lastAnnouncement: "",
     matchStartAt: null,
     updatedAt: Date.now(),
-    sideChangeMode: "odd-games", // odd-games | end-set | none
+    sideChangeMode: "odd-games",
     sidesSwapped: false,
     inTieBreak: false,
     tieBreak1: 0,
     tieBreak2: 0,
     tieBreakStartServer: 1,
+    setResults: [],
   };
 }
 
@@ -95,9 +96,9 @@ function buildAnnouncement(nextState, type = "point") {
   }
 
   if (type === "tiebreak-point") {
-    const left = nextState.server === 1 ? nextState.tieBreak1 : nextState.tieBreak2;
-    const right = nextState.server === 1 ? nextState.tieBreak2 : nextState.tieBreak1;
-    return `${left} ${right}`;
+    const serverSidePoints = nextState.server === 1 ? nextState.tieBreak1 : nextState.tieBreak2;
+    const receiverSidePoints = nextState.server === 1 ? nextState.tieBreak2 : nextState.tieBreak1;
+    return `${serverSidePoints} ${receiverSidePoints}`;
   }
 
   const serverIsTeam1 = nextState.server === 1;
@@ -115,6 +116,13 @@ function speakText(text, enabled = true) {
   utterance.rate = 0.95;
   utterance.pitch = 1;
   window.speechSynthesis.speak(utterance);
+}
+
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
 
 function useMatchState(matchId) {
@@ -181,10 +189,9 @@ function useMatchState(matchId) {
   const scoreTieBreakPoint = (winner) => {
     pushHistory();
 
-    let nextTieBreak1 = state.tieBreak1 + (winner === 1 ? 1 : 0);
-    let nextTieBreak2 = state.tieBreak2 + (winner === 2 ? 1 : 0);
+    const nextTieBreak1 = state.tieBreak1 + (winner === 1 ? 1 : 0);
+    const nextTieBreak2 = state.tieBreak2 + (winner === 2 ? 1 : 0);
 
-    const totalPoints = nextTieBreak1 + nextTieBreak2;
     let nextSidesSwapped = applySideSwapForTieBreak(state, nextTieBreak1, nextTieBreak2, state.sidesSwapped);
 
     let next = {
@@ -201,8 +208,13 @@ function useMatchState(matchId) {
 
     if (winsTieBreak) {
       const tieBreakWinner = nextTieBreak1 > nextTieBreak2 ? 1 : 2;
-      const team1Games = state.games1 + (tieBreakWinner === 1 ? 1 : 0);
-      const team2Games = state.games2 + (tieBreakWinner === 2 ? 1 : 0);
+      const finalSetScore1 = 6 + (tieBreakWinner === 1 ? 1 : 0);
+      const finalSetScore2 = 6 + (tieBreakWinner === 2 ? 1 : 0);
+
+      const updatedSetResults = [
+        ...state.setResults,
+        { team1: finalSetScore1, team2: finalSetScore2 },
+      ];
 
       let nextSets1 = state.sets1;
       let nextSets2 = state.sets2;
@@ -238,6 +250,7 @@ function useMatchState(matchId) {
           : "",
         lastWinner: tieBreakWinner,
         sidesSwapped: nextSidesAfterSet,
+        setResults: updatedSetResults,
       };
 
       next.lastAnnouncement = buildAnnouncement(next, matchWinner ? "match" : "set");
@@ -323,12 +336,15 @@ function useMatchState(matchId) {
     let nextSets1 = state.sets1;
     let nextSets2 = state.sets2;
     let nextSidesSwapped = state.sidesSwapped;
+    let updatedSetResults = [...state.setResults];
     let type = "game";
 
     const team1WinsSet = nextGames1 >= 6 && nextGames1 - nextGames2 >= 2;
     const team2WinsSet = nextGames2 >= 6 && nextGames2 - nextGames1 >= 2;
 
     if (team1WinsSet || team2WinsSet) {
+      updatedSetResults.push({ team1: nextGames1, team2: nextGames2 });
+
       if (team1WinsSet) nextSets1 += 1;
       if (team2WinsSet) nextSets2 += 1;
 
@@ -366,6 +382,7 @@ function useMatchState(matchId) {
         : "",
       lastWinner: gameWinner,
       sidesSwapped: nextSidesSwapped,
+      setResults: updatedSetResults,
     };
 
     next.lastAnnouncement = buildAnnouncement(next, type);
@@ -451,6 +468,36 @@ function TeamPanel({
       <div className="games-pill">
         <span className="games-pill-label">JUEGOS</span>
         <span className="games-pill-value">{games}</span>
+      </div>
+    </div>
+  );
+}
+
+function WinnerScreen({ state, resetMatch }) {
+  const winnerName = spokenTeamName(state.winnerLabel);
+  const elapsed = state.matchStartAt ? Date.now() - state.matchStartAt : 0;
+  const duration = formatDuration(elapsed);
+
+  return (
+    <div className="winner-page">
+      <div className="winner-card">
+        <div className="winner-trophy">🏆</div>
+        <div className="winner-subtitle">GANADOR DEL PARTIDO</div>
+        <div className="winner-name">{winnerName}</div>
+
+        <div className="winner-set-results">
+          {state.setResults.map((setResult, index) => (
+            <span key={index} className="winner-set-item">
+              {setResult.team1}-{setResult.team2}
+            </span>
+          ))}
+        </div>
+
+        <div className="winner-duration">⏱ {duration}</div>
+
+        <button className="winner-new-match" onClick={resetMatch}>
+          NUEVO PARTIDO
+        </button>
       </div>
     </div>
   );
@@ -760,6 +807,7 @@ export default function App() {
   }, [action]);
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
+  if (state.matchFinished) return <WinnerScreen state={state} resetMatch={reset} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
   return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
 }
