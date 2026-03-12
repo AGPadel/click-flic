@@ -182,9 +182,9 @@ function speakText(text, enabled = true) {
   window.speechSynthesis.speak(utterance);
 }
 
-function formatDuration(startAt) {
+function formatMatchDuration(startAt) {
   if (!startAt) return "00:00";
-  const totalSeconds = Math.floor((Date.now() - startAt) / 1000);
+  const totalSeconds = Math.max(0, Math.floor((Date.now() - startAt) / 1000));
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
@@ -261,7 +261,6 @@ function useMatchState(matchId) {
       );
 
       let newSetHistory = [...state.setHistory];
-
       if (setResult.setWinner) {
         newSetHistory.push({
           t1: rawGames1,
@@ -384,28 +383,28 @@ function TeamPanel({
 function WinnerScreen({ state, reset }) {
   return (
     <div className="winner-screen">
-      <div className="winner-horizontal-card">
-        <div className="winner-left-panel">
+      <div className="winner-shell">
+        <div className="winner-left">
           <div className="winner-trophy">🏆</div>
           <div className="winner-title">GANADORES DEL PARTIDO</div>
           <div className="winner-name">{spokenTeamName(state.winnerLabel)}</div>
-          <div className="winner-time">⏱ {formatDuration(state.matchStartAt)}</div>
+          <div className="winner-time">⏱ {formatMatchDuration(state.matchStartAt)}</div>
         </div>
 
-        <div className="winner-vertical-line" />
+        <div className="winner-divider" />
 
-        <div className="winner-right-panel">
+        <div className="winner-right">
           <div className="winner-sets-title">SETS</div>
 
-          <div className="winner-sets-list">
+          <div className="winner-score-list">
             {state.setHistory.length > 0 ? (
-              state.setHistory.map((set, i) => (
-                <div key={i} className="winner-set-row">
+              state.setHistory.map((set, index) => (
+                <div key={index} className="winner-score-row">
                   {set.t1}-{set.t2}
                 </div>
               ))
             ) : (
-              <div className="winner-set-row">
+              <div className="winner-score-row">
                 {state.sets1}-{state.sets2}
               </div>
             )}
@@ -505,4 +504,222 @@ function StartScreen({ startMatch }) {
       </div>
     </div>
   );
+}
+
+function ViewMode({ state, undo, scorePoint, resetMatch }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const startAt = state.matchStartAt || Date.now();
+    const timer = setInterval(() => {
+      setElapsed(Date.now() - startAt);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [state.matchStartAt]);
+
+  const totalSeconds = Math.floor(elapsed / 1000);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+  const leftTeam = state.sidesSwapped ? 2 : 1;
+  const rightTeam = state.sidesSwapped ? 1 : 2;
+
+  const leftData =
+    leftTeam === 1
+      ? {
+          players: [state.player1A, state.player1B],
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
+          games: state.games1,
+          sets: state.sets1,
+          active: state.server === 1,
+          accentClass: "blue-score",
+        }
+      : {
+          players: [state.player2A, state.player2B],
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
+          games: state.games2,
+          sets: state.sets2,
+          active: state.server === 2,
+          accentClass: "red-score",
+        };
+
+  const rightData =
+    rightTeam === 1
+      ? {
+          players: [state.player1A, state.player1B],
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
+          games: state.games1,
+          sets: state.sets1,
+          active: state.server === 1,
+          accentClass: "blue-score",
+        }
+      : {
+          players: [state.player2A, state.player2B],
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
+          games: state.games2,
+          sets: state.sets2,
+          active: state.server === 2,
+          accentClass: "red-score",
+        };
+
+  return (
+    <div className="view-page">
+      <div className="view-grid">
+        <div className="tap-half tap-left" onClick={() => scorePoint(leftTeam)} />
+        <div className="tap-half tap-right" onClick={() => scorePoint(rightTeam)} />
+
+        <TeamPanel
+          players={leftData.players}
+          pointsSelf={leftData.pointsSelf}
+          pointsOther={leftData.pointsOther}
+          games={leftData.games}
+          sets={leftData.sets}
+          accentClass={leftData.accentClass}
+          active={leftData.active}
+          goldenPoint={state.goldenPoint}
+        />
+
+        <TeamPanel
+          players={rightData.players}
+          pointsSelf={rightData.pointsSelf}
+          pointsOther={rightData.pointsOther}
+          games={rightData.games}
+          sets={rightData.sets}
+          accentClass={rightData.accentClass}
+          active={rightData.active}
+          goldenPoint={state.goldenPoint}
+        />
+
+        <div className="score-center-wrap">
+          <div className="score-timer">{minutes}:{seconds}</div>
+        </div>
+
+        <button
+          className="new-match-side"
+          onClick={resetMatch}
+          title="Nuevo partido"
+          aria-label="Nuevo partido"
+        >
+          <span className="new-match-plus">+</span>
+          <span className="new-match-text">NEW</span>
+        </button>
+
+        <button
+          className="undo-bottom"
+          onClick={undo}
+          title="Deshacer último punto"
+          aria-label="Deshacer último punto"
+        >
+          <UndoArrowIcon />
+          <span>Deshacer</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ControlMode({ state, scorePoint, undo, reset }) {
+  const action1Url = `${window.location.origin}${window.location.pathname}?id=pista1&action=team1`;
+  const action2Url = `${window.location.origin}${window.location.pathname}?id=pista1&action=team2`;
+  const actionUndoUrl = `${window.location.origin}${window.location.pathname}?id=pista1&action=undo`;
+
+  return (
+    <div className="control-page">
+      <div className="control-grid">
+        <div className="card">
+          <h2>Control del partido</h2>
+
+          <div className="control-buttons">
+            <button className="big-btn blue-btn" onClick={() => scorePoint(1)}>
+              + Punto {state.team1Name}
+            </button>
+            <button className="big-btn red-btn" onClick={() => scorePoint(2)}>
+              + Punto {state.team2Name}
+            </button>
+            <button className="big-btn gray-btn" onClick={undo}>
+              Deshacer
+            </button>
+            <button className="big-btn gray-btn" onClick={reset}>
+              Reiniciar
+            </button>
+          </div>
+
+          <div className="audio-box">
+            <h3>Demo de audio</h3>
+            <div className="audio-grid">
+              <button className="btn" onClick={() => speakText("Quince nada", true)}>Probar "Quince nada"</button>
+              <button className="btn" onClick={() => speakText("Treinta iguales", true)}>Probar "Treinta iguales"</button>
+              <button className="btn" onClick={() => speakText("Ventaja servicio", true)}>Probar "Ventaja servicio"</button>
+              <button className="btn" onClick={() => speakText("Punto de oro", true)}>Probar "Punto de oro"</button>
+              <button className="btn" onClick={() => speakText(`Juego para ${state.team1Name}`, true)}>Probar juego pareja 1</button>
+              <button className="btn" onClick={() => speakText(`Juego, set y partido para ${state.team2Name}`, true)}>Probar final de partido</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h2>Conexión Flic</h2>
+
+          <div className="url-box">
+            <strong>1 clic - suma punto pareja 1</strong>
+            <div>{action1Url}</div>
+          </div>
+
+          <div className="url-box">
+            <strong>2 clics - suma punto pareja 2</strong>
+            <div>{action2Url}</div>
+          </div>
+
+          <div className="url-box">
+            <strong>Pulsación larga - deshacer</strong>
+            <div>{actionUndoUrl}</div>
+          </div>
+
+          <div className="note-box">
+            Usa en Flic la acción Open browser con estas URLs, sin mode=control.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const { matchId, mode, action } = parseMode();
+  const { state, startMatch, scorePoint, undo, reset } = useMatchState(matchId);
+
+  useEffect(() => {
+    if (state.lastAnnouncement) {
+      speakText(state.lastAnnouncement, state.voiceEnabled);
+    }
+  }, [state.lastAnnouncement, state.voiceEnabled]);
+
+  useEffect(() => {
+    if (!state.started || !action) return;
+
+    if (action === "team1") scorePoint(1);
+    if (action === "team2") scorePoint(2);
+    if (action === "undo") undo();
+
+    const params = new URLSearchParams(window.location.search);
+    params.delete("action");
+
+    const nextUrl =
+      params.toString().length > 0
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+
+    setTimeout(() => {
+      window.history.replaceState({}, "", nextUrl);
+    }, 10);
+  }, [action]);
+
+  if (!state.started) return <StartScreen startMatch={startMatch} />;
+  if (state.matchFinished) return <WinnerScreen state={state} reset={reset} />;
+  if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
+  return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
 }
