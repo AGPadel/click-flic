@@ -196,20 +196,24 @@ input {
 }
 
 .big-score {
-  font-size: 32rem;
-  line-height: 1;
-  font-weight: 900;
-  letter-spacing: -0.05em;
+  font-size: 34rem;
+  line-height: 0.9;
+  font-weight: 950;
+  letter-spacing: -0.02em;
   position: relative;
   z-index: 1;
+
+  text-shadow:
+    0 3px 6px rgba(0,0,0,0.12),
+    0 1px 1px rgba(0,0,0,0.08);
 }
 
 .blue-score {
-  color: #223f6b;
+  color: #1e3a5f;
 }
 
 .red-score {
-  color: #8f1717;
+  color: #991b1b;
 }
 
 .team-bottom {
@@ -493,7 +497,7 @@ input {
   }
 
   .big-score {
-    font-size: 13rem;
+    font-size: 17rem;
   }
 
   .team-bottom {
