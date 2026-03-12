@@ -64,7 +64,14 @@ input {
   border: 1px solid #d7dde5;
   border-radius: 14px;
   padding: 14px 16px;
-  background: #fff;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+input::placeholder {
+  color: #94a3b8;
 }
 
 .section-title {
@@ -153,7 +160,7 @@ input {
 
 .team-top {
   position: absolute;
-  top: 22px;
+  top: 34px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -161,15 +168,7 @@ input {
   z-index: 12;
 }
 
-.team-name {
-  font-size: 10px;
-  color: #9ca3af;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-}
-
 .team-players {
-  margin-top: 10px;
   display: inline-block;
   background: #f8fafc;
   border: 1px solid #e5e7eb;
@@ -298,25 +297,31 @@ input {
   backdrop-filter: blur(4px);
 }
 
-.new-match-top {
+.new-match-side {
   position: absolute;
-  left: 50%;
-  top: 12px;
-  transform: translateX(-50%);
+  right: 12px;
+  bottom: 88px;
   z-index: 40;
-  padding: 8px 14px;
+  width: 50px;
+  height: 50px;
   border: 1px solid #d7dde5;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   color: #475569;
-  font-size: 12px;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
 }
 
-.new-match-top:hover {
+.new-match-side:hover {
   background: #ffffff;
+}
+
+.new-match-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .undo-bottom {
@@ -457,17 +462,11 @@ input {
   }
 
   .team-top {
-    top: 14px;
+    top: 38px;
     width: 94%;
   }
 
-  .team-name {
-    font-size: 8px;
-    letter-spacing: 0.18em;
-  }
-
   .team-players {
-    margin-top: 6px;
     padding: 6px 10px;
     font-size: 12px;
     border-radius: 12px;
@@ -525,10 +524,16 @@ input {
     padding: 5px 9px;
   }
 
-  .new-match-top {
-    top: 8px;
-    padding: 6px 10px;
-    font-size: 10px;
+  .new-match-side {
+    right: 8px;
+    bottom: 74px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .new-match-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .undo-bottom {

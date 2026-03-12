@@ -27,13 +27,17 @@ function emptyState() {
     lastAnnouncement: "",
     matchStartAt: null,
     updatedAt: Date.now(),
-    sideChangeMode: "odd-games", // "odd-games" | "end-set" | "none"
+    sideChangeMode: "odd-games",
     sidesSwapped: false,
   };
 }
 
 function buildStorageKey(matchId) {
   return `padelscore-match-${matchId}`;
+}
+
+function buildHistoryKey(matchId) {
+  return `padelscore-history-${matchId}`;
 }
 
 function parseMode() {
@@ -169,6 +173,7 @@ function speakText(text, enabled = true) {
 
 function useMatchState(matchId) {
   const storageKey = useMemo(() => buildStorageKey(matchId), [matchId]);
+  const historyKey = useMemo(() => buildHistoryKey(matchId), [matchId]);
 
   const [state, setState] = useState(() => {
     const raw = localStorage.getItem(storageKey);
@@ -178,27 +183,33 @@ function useMatchState(matchId) {
   const historyRef = useRef([]);
 
   useEffect(() => {
+    const rawHistory = localStorage.getItem(historyKey);
+    historyRef.current = rawHistory ? JSON.parse(rawHistory) : [];
+  }, [historyKey]);
+
+  useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(state));
   }, [state, storageKey]);
 
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === storageKey && e.newValue) {
-        setState(JSON.parse(e.newValue));
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, [storageKey]);
+  const persistHistory = () => {
+    localStorage.setItem(historyKey, JSON.stringify(historyRef.current));
+  };
+
+  const clearHistory = () => {
+    historyRef.current = [];
+    localStorage.setItem(historyKey, JSON.stringify([]));
+  };
 
   const pushHistory = () => {
     historyRef.current.push(JSON.parse(JSON.stringify(state)));
     if (historyRef.current.length > 100) historyRef.current.shift();
+    persistHistory();
   };
 
   const save = (next) => setState({ ...next, updatedAt: Date.now() });
 
   const startMatch = (config) => {
+    clearHistory();
     save({
       ...emptyState(),
       ...config,
@@ -269,10 +280,14 @@ function useMatchState(matchId) {
 
   const undo = () => {
     const prev = historyRef.current.pop();
-    if (prev) setState(prev);
+    if (prev) {
+      persistHistory();
+      setState(prev);
+    }
   };
 
   const reset = () => {
+    clearHistory();
     save(emptyState());
   };
 
@@ -302,8 +317,21 @@ function UndoArrowIcon() {
   );
 }
 
+function NewMatchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="new-match-icon" aria-hidden="true">
+      <path
+        d="M12 5v14M5 12h14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function TeamPanel({
-  name,
   players = [],
   pointsSelf,
   pointsOther,
@@ -316,7 +344,6 @@ function TeamPanel({
   return (
     <div className={`team-panel ${active ? "service-active" : ""}`}>
       <div className="team-top">
-        <div className="team-name">{name}</div>
         <div className="team-players">{players.filter(Boolean).join(" - ")}</div>
       </div>
 
@@ -447,7 +474,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
   const leftData =
     leftTeam === 1
       ? {
-          name: state.team1Name,
           players: [state.player1A, state.player1B],
           pointsSelf: state.points1,
           pointsOther: state.points2,
@@ -457,7 +483,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
           accentClass: "blue-score",
         }
       : {
-          name: state.team2Name,
           players: [state.player2A, state.player2B],
           pointsSelf: state.points2,
           pointsOther: state.points1,
@@ -470,7 +495,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
   const rightData =
     rightTeam === 1
       ? {
-          name: state.team1Name,
           players: [state.player1A, state.player1B],
           pointsSelf: state.points1,
           pointsOther: state.points2,
@@ -480,7 +504,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
           accentClass: "blue-score",
         }
       : {
-          name: state.team2Name,
           players: [state.player2A, state.player2B],
           pointsSelf: state.points2,
           pointsOther: state.points1,
@@ -497,7 +520,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
         <div className="tap-half tap-right" onClick={() => scorePoint(rightTeam)} />
 
         <TeamPanel
-          name={leftData.name}
           players={leftData.players}
           pointsSelf={leftData.pointsSelf}
           pointsOther={leftData.pointsOther}
@@ -509,7 +531,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
         />
 
         <TeamPanel
-          name={rightData.name}
           players={rightData.players}
           pointsSelf={rightData.pointsSelf}
           pointsOther={rightData.pointsOther}
@@ -525,12 +546,12 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
         </div>
 
         <button
-          className="new-match-top"
+          className="new-match-side"
           onClick={resetMatch}
-          title="Empezar un partido nuevo"
-          aria-label="Empezar un partido nuevo"
+          title="Nuevo partido"
+          aria-label="Nuevo partido"
         >
-          Nuevo partido
+          <NewMatchIcon />
         </button>
 
         <button
@@ -548,9 +569,9 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
 }
 
 function ControlMode({ state, scorePoint, undo, reset }) {
-  const action1Url = `${window.location.origin}${window.location.pathname}?id=pista1&mode=control&action=team1`;
-  const action2Url = `${window.location.origin}${window.location.pathname}?id=pista1&mode=control&action=team2`;
-  const actionUndoUrl = `${window.location.origin}${window.location.pathname}?id=pista1&mode=control&action=undo`;
+  const action1Url = `${window.location.origin}${window.location.pathname}?id=pista1&action=team1`;
+  const action2Url = `${window.location.origin}${window.location.pathname}?id=pista1&action=team2`;
+  const actionUndoUrl = `${window.location.origin}${window.location.pathname}?id=pista1&action=undo`;
 
   return (
     <div className="control-page">
@@ -605,7 +626,7 @@ function ControlMode({ state, scorePoint, undo, reset }) {
           </div>
 
           <div className="note-box">
-            Ahora mismo funciona en local del navegador. El siguiente paso será pasar esto a sincronización real para que varios móviles vean lo mismo y Flic actúe en pista.
+            Usa en Flic la acción Open browser con estas URLs, sin mode=control.
           </div>
         </div>
       </div>
@@ -632,9 +653,14 @@ export default function App() {
 
     const params = new URLSearchParams(window.location.search);
     params.delete("action");
-    const nextUrl = `${window.location.pathname}?${params.toString()}`;
+
+    const nextUrl =
+      params.toString().length > 0
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+
     window.history.replaceState({}, "", nextUrl);
-  }, [action, state.started]);
+  }, [action]);
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
