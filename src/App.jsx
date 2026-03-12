@@ -378,7 +378,7 @@ function StartScreen({ startMatch }) {
   );
 }
 
-function ViewMode({ state, undo, scorePoint }) {
+function ViewMode({ state, undo, scorePoint, resetMatch }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -426,6 +426,15 @@ function ViewMode({ state, undo, scorePoint }) {
         <div className="score-center-wrap">
           <div className="score-timer">{minutes}:{seconds}</div>
         </div>
+
+        <button
+          className="new-match-top"
+          onClick={resetMatch}
+          title="Empezar un partido nuevo"
+          aria-label="Empezar un partido nuevo"
+        >
+          Nuevo partido
+        </button>
 
         <button
           className="undo-bottom"
@@ -532,5 +541,5 @@ export default function App() {
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
-  return <ViewMode state={state} undo={undo} scorePoint={scorePoint} />;
+  return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
 }
