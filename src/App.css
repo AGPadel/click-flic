@@ -335,6 +335,7 @@ input::placeholder {
   color: #475569;
   line-height: 1;
 }
+
 .undo-bottom {
   position: absolute;
   left: 50%;
@@ -429,6 +430,129 @@ input::placeholder {
   color: #475569;
 }
 
+/* PANTALLA GANADOR HORIZONTAL */
+
+.winner-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(44, 71, 146, 0.18), transparent 30%),
+    linear-gradient(180deg, #09142e 0%, #101d49 100%);
+}
+
+.winner-shell {
+  width: min(1200px, 100%);
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: 1.1fr 1px 0.9fr;
+  align-items: center;
+  gap: 36px;
+}
+
+.winner-left {
+  color: white;
+  padding: 20px 10px;
+}
+
+.winner-trophy {
+  font-size: 92px;
+  line-height: 1;
+  margin-bottom: 22px;
+}
+
+.winner-title {
+  font-size: 30px;
+  letter-spacing: 0.26em;
+  color: rgba(255, 255, 255, 0.42);
+  margin-bottom: 28px;
+}
+
+.winner-name {
+  font-size: clamp(56px, 7vw, 110px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #f7a4a8;
+  text-transform: uppercase;
+  margin-bottom: 42px;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.winner-time {
+  font-size: 34px;
+  color: rgba(255, 255, 255, 0.36);
+  letter-spacing: 0.06em;
+}
+
+.winner-divider {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.10) 20%,
+    rgba(255, 255, 255, 0.10) 80%,
+    transparent 100%
+  );
+}
+
+.winner-right {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.winner-sets-title {
+  font-size: 34px;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 26px;
+}
+
+.winner-score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 42px;
+}
+
+.winner-score-row {
+  font-size: clamp(48px, 5vw, 80px);
+  font-weight: 900;
+  line-height: 1;
+  color: white;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.winner-score-row:last-child {
+  border-bottom: none;
+}
+
+.winner-button {
+  align-self: flex-start;
+  min-width: 340px;
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  background: white;
+  color: #1a1c4b;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+}
+
+.winner-button:hover {
+  transform: translateY(-1px);
+}
+
 @media (max-width: 1100px) {
   .big-score {
     font-size: 18rem;
@@ -436,6 +560,24 @@ input::placeholder {
 
   .control-grid {
     grid-template-columns: 1fr;
+  }
+
+  .winner-shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    min-height: auto;
+  }
+
+  .winner-divider {
+    display: none;
+  }
+
+  .winner-right {
+    padding-top: 0;
+  }
+
+  .winner-button {
+    align-self: center;
   }
 }
 
@@ -541,15 +683,15 @@ input::placeholder {
     min-width: 54px;
     height: 42px;
     padding: 0 10px;
-}
+  }
 
   .new-match-plus {
     font-size: 16px;
-}
+  }
 
   .new-match-text {
     font-size: 9px;
-}
+  }
 
   .undo-bottom {
     bottom: 8px;
@@ -566,55 +708,44 @@ input::placeholder {
     min-height: 78px;
     font-size: 20px;
   }
-}
 
-.winner-screen {
-  height: 100vh;
-  background: linear-gradient(180deg,#0f1e3d,#08132a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .winner-screen {
+    padding: 18px;
+  }
 
-.winner-card {
-  text-align: center;
-  color: white;
-}
+  .winner-trophy {
+    font-size: 62px;
+    margin-bottom: 16px;
+  }
 
-.winner-trophy {
-  font-size: 70px;
-  margin-bottom: 20px;
-}
+  .winner-title {
+    font-size: 16px;
+    letter-spacing: 0.16em;
+    margin-bottom: 18px;
+  }
 
-.winner-title {
-  letter-spacing: 6px;
-  opacity: 0.6;
-  margin-bottom: 20px;
-}
+  .winner-name {
+    margin-bottom: 26px;
+  }
 
-.winner-name {
-  font-size: 70px;
-  font-weight: 900;
-  color: #f7a4a8;
-  margin-bottom: 20px;
-}
+  .winner-time {
+    font-size: 20px;
+  }
 
-.winner-score {
-  font-size: 40px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+  .winner-sets-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
 
-.winner-time {
-  opacity: 0.6;
-  margin-bottom: 40px;
-}
+  .winner-score-list {
+    gap: 10px;
+    margin-bottom: 26px;
+  }
 
-.winner-button {
-  padding: 20px 40px;
-  border-radius: 12px;
-  border: none;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
+  .winner-button {
+    min-width: 230px;
+    padding: 18px 20px;
+    font-size: 18px;
+    border-radius: 18px;
+  }
 }

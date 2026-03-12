@@ -18,6 +18,7 @@ function emptyState() {
     games2: 0,
     sets1: 0,
     sets2: 0,
+    setHistory: [],
     server: 1,
     goldenPoint: true,
     voiceEnabled: true,
@@ -181,6 +182,14 @@ function speakText(text, enabled = true) {
   window.speechSynthesis.speak(utterance);
 }
 
+function formatMatchDuration(startAt) {
+  if (!startAt) return "00:00";
+  const totalSeconds = Math.max(0, Math.floor((Date.now() - startAt) / 1000));
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
+
 function useMatchState(matchId) {
   const storageKey = useMemo(() => buildStorageKey(matchId), [matchId]);
   const historyKey = useMemo(() => buildHistoryKey(matchId), [matchId]);
@@ -251,6 +260,14 @@ function useMatchState(matchId) {
         pointResult.gameWinner
       );
 
+      let newSetHistory = [...state.setHistory];
+      if (setResult.setWinner) {
+        newSetHistory.push({
+          t1: rawGames1,
+          t2: rawGames2,
+        });
+      }
+
       let nextSidesSwapped = state.sidesSwapped;
 
       if (state.sideChangeMode === "odd-games") {
@@ -271,6 +288,7 @@ function useMatchState(matchId) {
         games2: setResult.games2,
         sets1: setResult.sets1,
         sets2: setResult.sets2,
+        setHistory: newSetHistory,
         server: state.server === 1 ? 2 : 1,
         matchFinished: Boolean(setResult.matchWinner),
         winnerLabel: setResult.matchWinner
@@ -327,20 +345,6 @@ function UndoArrowIcon() {
   );
 }
 
-function NewMatchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="new-match-icon" aria-hidden="true">
-      <path
-        d="M12 5v14M5 12h14"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function TeamPanel({
   players = [],
   pointsSelf,
@@ -371,6 +375,45 @@ function TeamPanel({
       <div className="games-pill">
         <span className="games-pill-label">JUEGOS</span>
         <span className="games-pill-value">{games}</span>
+      </div>
+    </div>
+  );
+}
+
+function WinnerScreen({ state, reset }) {
+  return (
+    <div className="winner-screen">
+      <div className="winner-shell">
+        <div className="winner-left">
+          <div className="winner-trophy">🏆</div>
+          <div className="winner-title">GANADORES DEL PARTIDO</div>
+          <div className="winner-name">{spokenTeamName(state.winnerLabel)}</div>
+          <div className="winner-time">⏱ {formatMatchDuration(state.matchStartAt)}</div>
+        </div>
+
+        <div className="winner-divider" />
+
+        <div className="winner-right">
+          <div className="winner-sets-title">SETS</div>
+
+          <div className="winner-score-list">
+            {state.setHistory.length > 0 ? (
+              state.setHistory.map((set, index) => (
+                <div key={index} className="winner-score-row">
+                  {set.t1}-{set.t2}
+                </div>
+              ))
+            ) : (
+              <div className="winner-score-row">
+                {state.sets1}-{state.sets2}
+              </div>
+            )}
+          </div>
+
+          <button className="winner-button" onClick={reset}>
+            NUEVO PARTIDO
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -645,45 +688,6 @@ function ControlMode({ state, scorePoint, undo, reset }) {
   );
 }
 
-function WinnerScreen({ state, reset }) {
-  const duration = state.matchStartAt
-    ? Math.floor((Date.now() - state.matchStartAt) / 1000)
-    : 0;
-
-  const minutes = String(Math.floor(duration / 60)).padStart(2, "0");
-  const seconds = String(duration % 60).padStart(2, "0");
-
-  return (
-    <div className="winner-screen">
-      <div className="winner-card">
-        <div className="winner-trophy">🏆</div>
-
-        <div className="winner-title">
-          GANADOR DEL PARTIDO
-        </div>
-
-        <div className="winner-name">
-          {state.winnerLabel.replace("/", " Y ")}
-        </div>
-
-        <div className="winner-score">
-          {state.sets1} - {state.sets2}
-        </div>
-
-        <div className="winner-time">
-          ⏱ {minutes}:{seconds}
-        </div>
-
-        <button
-          className="winner-button"
-          onClick={reset}
-        >
-          NUEVO PARTIDO
-        </button>
-      </div>
-    </div>
-  );
-}
 export default function App() {
   const { matchId, mode, action } = parseMode();
   const { state, startMatch, scorePoint, undo, reset } = useMatchState(matchId);
@@ -694,28 +698,28 @@ export default function App() {
     }
   }, [state.lastAnnouncement, state.voiceEnabled]);
 
-useEffect(() => {
-  if (!state.started || !action) return;
+  useEffect(() => {
+    if (!state.started || !action) return;
 
-  if (action === "team1") scorePoint(1);
-  if (action === "team2") scorePoint(2);
-  if (action === "undo") undo();
+    if (action === "team1") scorePoint(1);
+    if (action === "team2") scorePoint(2);
+    if (action === "undo") undo();
 
-  const params = new URLSearchParams(window.location.search);
-  params.delete("action");
+    const params = new URLSearchParams(window.location.search);
+    params.delete("action");
 
-  const nextUrl =
-    params.toString().length > 0
-      ? `${window.location.pathname}?${params.toString()}`
-      : window.location.pathname;
+    const nextUrl =
+      params.toString().length > 0
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
 
-  setTimeout(() => {
-    window.history.replaceState({}, "", nextUrl);
-  }, 10);
-}, [action]);
+    setTimeout(() => {
+      window.history.replaceState({}, "", nextUrl);
+    }, 10);
+  }, [action]);
 
-if (!state.started) return <StartScreen startMatch={startMatch} />;
-if (state.matchFinished) return <WinnerScreen state={state} reset={reset} />;
-if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
-return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
+  if (!state.started) return <StartScreen startMatch={startMatch} />;
+  if (state.matchFinished) return <WinnerScreen state={state} reset={reset} />;
+  if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
+  return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
 }
