@@ -21,6 +21,89 @@ input {
   font: inherit;
 }
 
+.start-wrap,
+.control-page {
+  min-height: 100vh;
+  background: #f3f5f7;
+  padding: 24px;
+}
+
+.start-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+}
+
+.start-card {
+  width: 100%;
+  max-width: 860px;
+}
+
+.start-card h1,
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0 22px;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #d7dde5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.section-title {
+  margin: 18px 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.row-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 1px solid #d7dde5;
+  background: #fff;
+  color: #1f2937;
+  padding: 12px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.btn.full {
+  width: 100%;
+  margin-top: 24px;
+  padding: 16px;
+  font-weight: 700;
+}
+
 .view-page {
   height: 100vh;
   background: #f3f5f7;
@@ -48,7 +131,7 @@ input {
 
 .team-panel.service-active {
   border-color: #d4a017;
-  box-shadow: 0 0 0 8px rgba(212,160,23,0.25);
+  box-shadow: 0 0 0 8px rgba(212, 160, 23, 0.25);
 }
 
 .team-top {
@@ -58,6 +141,7 @@ input {
   transform: translateX(-50%);
   text-align: center;
   width: 90%;
+  z-index: 12;
 }
 
 .team-name {
@@ -84,22 +168,23 @@ input {
   top: 20px;
   left: 20px;
   background: #d4a017;
-  color: white;
+  color: #ffffff;
   padding: 8px 14px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.18em;
-  box-shadow: 0 6px 14px rgba(212,160,23,0.35);
+  box-shadow: 0 6px 14px rgba(212, 160, 23, 0.35);
+  z-index: 12;
 }
-
-/* PUNTOS GRANDES */
 
 .big-score {
   font-size: 26rem;
   line-height: 1;
   font-weight: 900;
   letter-spacing: -0.06em;
+  position: relative;
+  z-index: 1;
 }
 
 .blue-score {
@@ -110,14 +195,13 @@ input {
   color: #8f1717;
 }
 
-/* JUEGOS */
-
 .team-bottom {
   position: absolute;
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  z-index: 12;
 }
 
 .games-number {
@@ -132,8 +216,6 @@ input {
   letter-spacing: 0.35em;
 }
 
-/* SETS */
-
 .sets-badge {
   position: absolute;
   top: 20px;
@@ -143,24 +225,24 @@ input {
   padding: 6px 12px;
   font-size: 11px;
   color: #64748b;
-  background: white;
+  background: #ffffff;
+  z-index: 12;
 }
-
-/* MARCADOR CENTRAL */
 
 .center-box {
   position: absolute;
   left: 50%;
   top: 13%;
   transform: translateX(-50%);
-  background: rgba(255,255,255,0.75);
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(15,23,42,0.05);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
   padding: 8px 14px;
   text-align: center;
   min-width: 120px;
-  z-index: 10;
+  z-index: 30;
+  backdrop-filter: blur(4px);
 }
 
 .center-title {
@@ -196,8 +278,6 @@ input {
   color: #475569;
 }
 
-/* BOTON DESHACER */
-
 .undo-bottom {
   position: absolute;
   left: 50%;
@@ -214,11 +294,11 @@ input {
   border-radius: 12px;
 
   background: #d4a017;
-  color: white;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 700;
 
-  box-shadow: 0 6px 16px rgba(212,160,23,0.35);
+  box-shadow: 0 6px 16px rgba(212, 160, 23, 0.35);
   cursor: pointer;
 }
 
@@ -226,33 +306,226 @@ input {
   filter: brightness(1.05);
 }
 
-/* MOVIL */
+.undo-inline-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tap-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  z-index: 5;
+  background: transparent;
+}
+
+.tap-left {
+  left: 0;
+}
+
+.tap-right {
+  right: 0;
+}
+
+.control-grid {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 20px;
+}
+
+.control-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.big-btn {
+  min-height: 110px;
+  border: 0;
+  border-radius: 22px;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.blue-btn {
+  background: #223f6b;
+  color: #ffffff;
+}
+
+.red-btn {
+  background: #8f1717;
+  color: #ffffff;
+}
+
+.gray-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.audio-box {
+  margin-top: 22px;
+  background: #f8fafc;
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.audio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.url-box,
+.note-box {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 14px;
+  word-break: break-all;
+}
+
+.note-box {
+  border: 1px dashed #cbd5e1;
+  color: #475569;
+}
+
+@media (max-width: 1100px) {
+  .big-score {
+    font-size: 15rem;
+  }
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 760px) {
+  .start-wrap,
+  .control-page {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .form-grid,
+  .audio-grid,
+  .control-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .view-page {
+    height: 100dvh;
+    padding: 6px;
+  }
+
+  .view-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 6px;
+    height: 100%;
+  }
+
+  .team-panel {
+    border-radius: 22px;
+  }
+
+  .team-top {
+    top: 14px;
+    width: 94%;
+  }
+
+  .team-name {
+    font-size: 8px;
+    letter-spacing: 0.18em;
+  }
+
+  .team-players {
+    margin-top: 6px;
+    padding: 6px 8px;
+    font-size: 10px;
+    border-radius: 12px;
+  }
+
+  .service-pill {
+    top: 10px;
+    left: 10px;
+    padding: 5px 8px;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .sets-badge {
+    top: 10px;
+    right: 10px;
+    padding: 5px 8px;
+    font-size: 9px;
+  }
 
   .big-score {
     font-size: 9rem;
   }
 
-  .team-players {
-    font-size: 11px;
+  .team-bottom {
+    bottom: 8px;
   }
 
   .games-number {
     font-size: 26px;
   }
 
+  .games-label {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
+
   .center-box {
     top: 14%;
     padding: 6px 10px;
+    min-width: 108px;
+  }
+
+  .center-title {
+    font-size: 7px;
+    letter-spacing: 0.12em;
+  }
+
+  .center-time {
+    margin-top: 2px;
+    font-size: 9px;
   }
 
   .center-games {
+    margin-top: 5px;
+    gap: 8px;
     font-size: 20px;
   }
 
   .center-sets {
+    margin-top: 2px;
+    gap: 8px;
     font-size: 12px;
   }
 
+  .undo-bottom {
+    bottom: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .undo-inline-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .big-btn {
+    min-height: 78px;
+    font-size: 20px;
+  }
 }
