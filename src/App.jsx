@@ -420,20 +420,21 @@ function ViewMode({ state, undo, scorePoint }) {
           goldenPoint={state.goldenPoint}
         />
 
-        <div className="center-box">
-          <div className="center-title">MARCADOR</div>
-          <div className="center-time">TIEMPO {minutes}:{seconds}</div>
-
-          <div className="center-games">
-            <span>{state.games1}</span>
-            <span>-</span>
-            <span>{state.games2}</span>
+        <div className="score-center-wrap">
+          <div className="score-pill score-pill-top">
+            <span className="score-pill-left">{state.games1}</span>
+            <span className="score-pill-sep">-</span>
+            <span className="score-pill-right">{state.games2}</span>
           </div>
 
-          <div className="center-sets">
-            <span>{state.sets1}</span>
-            <span>-</span>
-            <span>{state.sets2}</span>
+          <div className="score-pill score-pill-bottom">
+            <span className="score-pill-bottom-left">{state.sets1}</span>
+            <span className="score-pill-sep-light">-</span>
+            <span className="score-pill-bottom-right">{state.sets2}</span>
+          </div>
+
+          <div className="score-timer">
+            {minutes}:{seconds}
           </div>
         </div>
 

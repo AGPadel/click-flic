@@ -118,6 +118,23 @@ input {
   gap: 6px;
 }
 
+.tap-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  z-index: 5;
+  background: transparent;
+}
+
+.tap-left {
+  left: 0;
+}
+
+.tap-right {
+  right: 0;
+}
+
 .team-panel {
   position: relative;
   overflow: hidden;
@@ -229,54 +246,76 @@ input {
   z-index: 12;
 }
 
-.center-box {
+/* MARCADOR CENTRAL NUEVO */
+
+.score-center-wrap {
   position: absolute;
   left: 50%;
   top: 13%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
-  padding: 8px 14px;
-  text-align: center;
-  min-width: 120px;
   z-index: 30;
-  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.center-title {
-  font-size: 9px;
-  letter-spacing: 0.25em;
+.score-timer {
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.score-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  border-radius: 20px;
+  padding: 10px 22px;
+  min-width: 160px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.score-pill-top {
+  background: #24304a;
+  color: #ffffff;
+}
+
+.score-pill-bottom {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e5e7eb;
+}
+
+.score-pill-left,
+.score-pill-right {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.score-pill-bottom-left,
+.score-pill-bottom-right {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.score-pill-sep {
+  font-size: 24px;
+  font-weight: 900;
   color: #94a3b8;
 }
 
-.center-time {
-  margin-top: 3px;
-  font-size: 10px;
-  font-weight: 600;
-  color: #64748b;
+.score-pill-sep-light {
+  font-size: 18px;
+  font-weight: 800;
+  color: #cbd5e1;
 }
 
-.center-games {
-  margin-top: 6px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  font-size: 26px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.center-sets {
-  margin-top: 2px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #475569;
-}
+/* BOTON DESHACER */
 
 .undo-bottom {
   position: absolute;
@@ -311,22 +350,7 @@ input {
   height: 16px;
 }
 
-.tap-half {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  z-index: 5;
-  background: transparent;
-}
-
-.tap-left {
-  left: 0;
-}
-
-.tap-right {
-  right: 0;
-}
+/* CONTROL */
 
 .control-grid {
   max-width: 1300px;
@@ -485,32 +509,38 @@ input {
     letter-spacing: 0.16em;
   }
 
-  .center-box {
+  .score-center-wrap {
     top: 14%;
-    padding: 6px 10px;
-    min-width: 108px;
-  }
-
-  .center-title {
-    font-size: 7px;
-    letter-spacing: 0.12em;
-  }
-
-  .center-time {
-    margin-top: 2px;
-    font-size: 9px;
-  }
-
-  .center-games {
-    margin-top: 5px;
     gap: 8px;
-    font-size: 20px;
   }
 
-  .center-sets {
-    margin-top: 2px;
-    gap: 8px;
-    font-size: 12px;
+  .score-timer {
+    font-size: 10px;
+  }
+
+  .score-pill {
+    min-width: 110px;
+    padding: 7px 14px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .score-pill-left,
+  .score-pill-right {
+    font-size: 18px;
+  }
+
+  .score-pill-bottom-left,
+  .score-pill-bottom-right {
+    font-size: 14px;
+  }
+
+  .score-pill-sep {
+    font-size: 16px;
+  }
+
+  .score-pill-sep-light {
+    font-size: 14px;
   }
 
   .undo-bottom {
