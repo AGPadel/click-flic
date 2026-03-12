@@ -27,6 +27,8 @@ function emptyState() {
     lastAnnouncement: "",
     matchStartAt: null,
     updatedAt: Date.now(),
+    sideChangeMode: "odd-games", // "odd-games" | "end-set" | "none"
+    sidesSwapped: false,
   };
 }
 
@@ -64,7 +66,9 @@ function nextPointState(p1, p2, winner, goldenPoint = true) {
     } else if (points1 === 3 && points2 === 4) {
       points1 = 3;
       points2 = 3;
-    } else if (points1 === 4) gameWinner = 1;
+    } else if (points1 === 4) {
+      gameWinner = 1;
+    }
   }
 
   if (winner === 2) {
@@ -76,7 +80,9 @@ function nextPointState(p1, p2, winner, goldenPoint = true) {
     } else if (points2 === 3 && points1 === 4) {
       points2 = 3;
       points1 = 3;
-    } else if (points2 === 4) gameWinner = 2;
+    } else if (points2 === 4) {
+      gameWinner = 2;
+    }
   }
 
   return { points1, points2, gameWinner };
@@ -194,7 +200,7 @@ function useMatchState(matchId) {
 
   const startMatch = (config) => {
     save({
-      ...state,
+      ...emptyState(),
       ...config,
       started: true,
       matchStartAt: Date.now(),
@@ -212,6 +218,10 @@ function useMatchState(matchId) {
     let type = "point";
 
     if (pointResult.gameWinner) {
+      const rawGames1 = state.games1 + (pointResult.gameWinner === 1 ? 1 : 0);
+      const rawGames2 = state.games2 + (pointResult.gameWinner === 2 ? 1 : 0);
+      const totalGamesPlayedInSet = rawGames1 + rawGames2;
+
       const setResult = resolveSet(
         state.games1,
         state.games2,
@@ -219,6 +229,18 @@ function useMatchState(matchId) {
         state.sets2,
         pointResult.gameWinner
       );
+
+      let nextSidesSwapped = state.sidesSwapped;
+
+      if (state.sideChangeMode === "odd-games") {
+        if (totalGamesPlayedInSet % 2 === 1) {
+          nextSidesSwapped = !nextSidesSwapped;
+        }
+      } else if (state.sideChangeMode === "end-set") {
+        if (setResult.setWinner) {
+          nextSidesSwapped = !nextSidesSwapped;
+        }
+      }
 
       next = {
         ...next,
@@ -235,6 +257,7 @@ function useMatchState(matchId) {
             ? state.team1Name
             : state.team2Name
           : "",
+        sidesSwapped: nextSidesSwapped,
       };
 
       type = setResult.matchWinner ? "match" : setResult.setWinner ? "set" : "game";
@@ -323,6 +346,7 @@ function StartScreen({ startMatch }) {
   const [p2b, setP2b] = useState("");
   const [server, setServer] = useState(1);
   const [golden, setGolden] = useState(true);
+  const [sideChangeMode, setSideChangeMode] = useState("odd-games");
 
   return (
     <div className="start-wrap">
@@ -356,6 +380,28 @@ function StartScreen({ startMatch }) {
           </button>
         </div>
 
+        <div className="section-title">Cambio de lado</div>
+        <div className="row-buttons">
+          <button
+            className={sideChangeMode === "odd-games" ? "btn primary" : "btn"}
+            onClick={() => setSideChangeMode("odd-games")}
+          >
+            Juegos impares
+          </button>
+          <button
+            className={sideChangeMode === "end-set" ? "btn primary" : "btn"}
+            onClick={() => setSideChangeMode("end-set")}
+          >
+            Al acabar set
+          </button>
+          <button
+            className={sideChangeMode === "none" ? "btn primary" : "btn"}
+            onClick={() => setSideChangeMode("none")}
+          >
+            Sin cambio automático
+          </button>
+        </div>
+
         <button
           className="btn primary full"
           onClick={() =>
@@ -368,6 +414,8 @@ function StartScreen({ startMatch }) {
               player2B: p2b,
               server,
               goldenPoint: golden,
+              sideChangeMode,
+              sidesSwapped: false,
             })
           }
         >
@@ -393,33 +441,82 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
   const seconds = String(totalSeconds % 60).padStart(2, "0");
 
+  const leftTeam = state.sidesSwapped ? 2 : 1;
+  const rightTeam = state.sidesSwapped ? 1 : 2;
+
+  const leftData =
+    leftTeam === 1
+      ? {
+          name: state.team1Name,
+          players: [state.player1A, state.player1B],
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
+          games: state.games1,
+          sets: state.sets1,
+          active: state.server === 1,
+          accentClass: "blue-score",
+        }
+      : {
+          name: state.team2Name,
+          players: [state.player2A, state.player2B],
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
+          games: state.games2,
+          sets: state.sets2,
+          active: state.server === 2,
+          accentClass: "red-score",
+        };
+
+  const rightData =
+    rightTeam === 1
+      ? {
+          name: state.team1Name,
+          players: [state.player1A, state.player1B],
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
+          games: state.games1,
+          sets: state.sets1,
+          active: state.server === 1,
+          accentClass: "blue-score",
+        }
+      : {
+          name: state.team2Name,
+          players: [state.player2A, state.player2B],
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
+          games: state.games2,
+          sets: state.sets2,
+          active: state.server === 2,
+          accentClass: "red-score",
+        };
+
   return (
     <div className="view-page">
       <div className="view-grid">
-        <div className="tap-half tap-left" onClick={() => scorePoint(1)} />
-        <div className="tap-half tap-right" onClick={() => scorePoint(2)} />
+        <div className="tap-half tap-left" onClick={() => scorePoint(leftTeam)} />
+        <div className="tap-half tap-right" onClick={() => scorePoint(rightTeam)} />
 
         <TeamPanel
-          name={state.team1Name}
-          players={[state.player1A, state.player1B]}
-          pointsSelf={state.points1}
-          pointsOther={state.points2}
-          games={state.games1}
-          sets={state.sets1}
-          accentClass="blue-score"
-          active={state.server === 1}
+          name={leftData.name}
+          players={leftData.players}
+          pointsSelf={leftData.pointsSelf}
+          pointsOther={leftData.pointsOther}
+          games={leftData.games}
+          sets={leftData.sets}
+          accentClass={leftData.accentClass}
+          active={leftData.active}
           goldenPoint={state.goldenPoint}
         />
 
         <TeamPanel
-          name={state.team2Name}
-          players={[state.player2A, state.player2B]}
-          pointsSelf={state.points2}
-          pointsOther={state.points1}
-          games={state.games2}
-          sets={state.sets2}
-          accentClass="red-score"
-          active={state.server === 2}
+          name={rightData.name}
+          players={rightData.players}
+          pointsSelf={rightData.pointsSelf}
+          pointsOther={rightData.pointsOther}
+          games={rightData.games}
+          sets={rightData.sets}
+          accentClass={rightData.accentClass}
+          active={rightData.active}
           goldenPoint={state.goldenPoint}
         />
 

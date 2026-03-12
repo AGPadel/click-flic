@@ -43,7 +43,7 @@ input {
 
 .start-card {
   width: 100%;
-  max-width: 860px;
+  max-width: 900px;
 }
 
 .start-card h1,
@@ -298,6 +298,27 @@ input {
   backdrop-filter: blur(4px);
 }
 
+.new-match-top {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 8px 14px;
+  border: 1px solid #d7dde5;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+}
+
+.new-match-top:hover {
+  background: #ffffff;
+}
+
 .undo-bottom {
   position: absolute;
   left: 50%;
@@ -504,6 +525,12 @@ input {
     padding: 5px 9px;
   }
 
+  .new-match-top {
+    top: 8px;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
   .undo-bottom {
     bottom: 8px;
     padding: 8px 14px;
@@ -518,35 +545,5 @@ input {
   .big-btn {
     min-height: 78px;
     font-size: 20px;
-  }
-}
-
-.new-match-top {
-  position: absolute;
-  left: 50%;
-  top: 12px;
-  transform: translateX(-50%);
-  z-index: 40;
-
-  padding: 8px 14px;
-  border: 1px solid #d7dde5;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #475569;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
-}
-
-.new-match-top:hover {
-  background: #ffffff;
-}
-
-@media (max-width: 760px) {
-  .new-match-top {
-    top: 8px;
-    padding: 6px 10px;
-    font-size: 10px;
   }
 }
