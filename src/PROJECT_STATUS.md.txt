@@ -1,0 +1,66 @@
+PROYECTO
+Marcador de pádel para móvil controlado con botón Flic.
+
+OBJETIVO
+Poder anotar puntos durante un partido de pádel usando un botón físico sin tocar el móvil, mostrando el marcador en pantalla grande.
+
+REPOSITORIO
+click-flic
+
+HOSTING
+Vercel (deploy automático desde GitHub)
+
+FUNCIONAMIENTO GENERAL
+La aplicación muestra el marcador de un partido de pádel en una sola pista.
+
+El marcador incluye:
+- puntos del juego (0, 15, 30, 40, ventaja)
+- juegos del set
+- sets ganados
+- indicación clara de quién está al servicio
+- cronómetro del partido
+- lectura por voz del marcador
+
+CONTROL DE PUNTOS
+El sistema está pensado para funcionar con un botón Flic.
+
+Configuración prevista:
+- 1 clic → punto para pareja izquierda
+- 2 clics → punto para pareja derecha
+- pulsación larga → deshacer último punto
+
+DISEÑO DE PANTALLA
+Pantalla dividida en dos paneles:
+- izquierda: pareja 1
+- derecha: pareja 2
+
+Elementos visuales:
+- puntos (15, 30, 40) muy grandes
+- indicador de servicio con borde dorado
+- marcador central pequeño con juegos y sets
+- botón "Deshacer" en la parte inferior de la pantalla
+
+MODOS DE LA APLICACIÓN
+Modo visualización:
+Pantalla grande para ver el marcador durante el partido.
+
+Modo control:
+Pantalla para sumar puntos manualmente o generar enlaces para Flic.
+
+ALMACENAMIENTO
+El estado del partido se guarda en localStorage para mantener sincronización entre pestañas del navegador.
+
+AUDIO
+Uso de Web Speech API para cantar el marcador:
+- "Quince nada"
+- "Treinta iguales"
+- "Ventaja servicio"
+- "Juego para..."
+- "Juego, set y partido para..."
+
+PRÓXIMOS PASOS
+1. Ajustar diseño final del marcador
+2. Mejorar jerarquía visual (puntos dominantes)
+3. Integrar botón Flic real mediante URL
+4. Sincronización en tiempo real entre móviles
+5. Mejorar locuciones de audio del marcador
