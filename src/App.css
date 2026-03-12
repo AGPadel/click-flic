@@ -169,14 +169,14 @@ input {
 }
 
 .team-players {
-  margin-top: 8px;
+  margin-top: 10px;
   display: inline-block;
   background: #f8fafc;
   border: 1px solid #e5e7eb;
   border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 16px;
-  font-weight: 700;
+  padding: 8px 18px;
+  font-size: 20px;
+  font-weight: 800;
   color: #475569;
 }
 
@@ -196,10 +196,10 @@ input {
 }
 
 .big-score {
-  font-size: 26rem;
+  font-size: 32rem;
   line-height: 1;
   font-weight: 900;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.05em;
   position: relative;
   z-index: 1;
 }
@@ -493,7 +493,7 @@ input {
   }
 
   .big-score {
-    font-size: 9rem;
+    font-size: 13rem;
   }
 
   .team-bottom {
