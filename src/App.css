@@ -202,10 +202,9 @@ input {
   letter-spacing: -0.02em;
   position: relative;
   z-index: 1;
-
   text-shadow:
-    0 3px 6px rgba(0,0,0,0.12),
-    0 1px 1px rgba(0,0,0,0.08);
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(0, 0, 0, 0.08);
 }
 
 .blue-score {
@@ -216,41 +215,64 @@ input {
   color: #991b1b;
 }
 
-.team-bottom {
+.sets-pill {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 7px 12px;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12);
+}
+
+.sets-pill-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #2563eb;
+}
+
+.sets-pill-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: #1e3a5f;
+  line-height: 1;
+}
+
+.games-pill {
   position: absolute;
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  text-align: center;
   z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 8px 14px;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12);
 }
 
-.games-number {
-  font-size: 40px;
-  color: #94a3b8;
-  font-weight: 900;
-}
-
-.games-label {
+.games-pill-label {
   font-size: 10px;
-  color: #cbd5e1;
-  letter-spacing: 0.35em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #2563eb;
 }
 
-.sets-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 11px;
-  color: #64748b;
-  background: #ffffff;
-  z-index: 12;
+.games-pill-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #1e3a5f;
+  line-height: 1;
 }
-
-/* MARCADOR CENTRAL NUEVO */
 
 .score-center-wrap {
   position: absolute;
@@ -259,89 +281,40 @@ input {
   transform: translateX(-50%);
   z-index: 30;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
 
 .score-timer {
   color: #16a34a;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #dcfce7;
+  border-radius: 999px;
+  padding: 6px 12px;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.08);
+  backdrop-filter: blur(4px);
 }
-
-.score-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  border-radius: 20px;
-  padding: 10px 22px;
-  min-width: 160px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-}
-
-.score-pill-top {
-  background: #24304a;
-  color: #ffffff;
-}
-
-.score-pill-bottom {
-  background: #ffffff;
-  color: #0f172a;
-  border: 1px solid #e5e7eb;
-}
-
-.score-pill-left,
-.score-pill-right {
-  font-size: 26px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.score-pill-bottom-left,
-.score-pill-bottom-right {
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.score-pill-sep {
-  font-size: 24px;
-  font-weight: 900;
-  color: #94a3b8;
-}
-
-.score-pill-sep-light {
-  font-size: 18px;
-  font-weight: 800;
-  color: #cbd5e1;
-}
-
-/* BOTON DESHACER */
 
 .undo-bottom {
   position: absolute;
   left: 50%;
-  bottom: 10px;
+  bottom: 8px;
   transform: translateX(-50%);
   z-index: 40;
-
   display: flex;
   align-items: center;
   gap: 8px;
-
-  padding: 10px 18px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 14px;
-
+  border-radius: 12px;
   background: #d4a017;
-  color: white;
-  font-size: 14px;
+  color: #ffffff;
+  font-size: 13px;
   font-weight: 700;
-
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 16px rgba(212, 160, 23, 0.35);
   cursor: pointer;
 }
 
@@ -353,8 +326,6 @@ input {
   width: 16px;
   height: 16px;
 }
-
-/* CONTROL */
 
 .control-grid {
   max-width: 1300px;
@@ -423,7 +394,7 @@ input {
 
 @media (max-width: 1100px) {
   .big-score {
-    font-size: 15rem;
+    font-size: 18rem;
   }
 
   .control-grid {
@@ -476,8 +447,8 @@ input {
 
   .team-players {
     margin-top: 6px;
-    padding: 6px 8px;
-    font-size: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
     border-radius: 12px;
   }
 
@@ -489,62 +460,48 @@ input {
     letter-spacing: 0.08em;
   }
 
-  .sets-badge {
-    top: 10px;
-    right: 10px;
-    padding: 5px 8px;
-    font-size: 9px;
-  }
-
   .big-score {
     font-size: 17rem;
   }
 
-  .team-bottom {
-    bottom: 8px;
+  .sets-pill {
+    top: 10px;
+    right: 10px;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 10px;
   }
 
-  .games-number {
-    font-size: 26px;
-  }
-
-  .games-label {
+  .sets-pill-label {
     font-size: 8px;
-    letter-spacing: 0.16em;
+  }
+
+  .sets-pill-value {
+    font-size: 14px;
+  }
+
+  .games-pill {
+    bottom: 12px;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+  }
+
+  .games-pill-label {
+    font-size: 8px;
+  }
+
+  .games-pill-value {
+    font-size: 16px;
   }
 
   .score-center-wrap {
-    top: 14%;
-    gap: 8px;
+    top: 12%;
   }
 
   .score-timer {
     font-size: 10px;
-  }
-
-  .score-pill {
-    min-width: 110px;
-    padding: 7px 14px;
-    gap: 10px;
-    border-radius: 16px;
-  }
-
-  .score-pill-left,
-  .score-pill-right {
-    font-size: 18px;
-  }
-
-  .score-pill-bottom-left,
-  .score-pill-bottom-right {
-    font-size: 14px;
-  }
-
-  .score-pill-sep {
-    font-size: 16px;
-  }
-
-  .score-pill-sep-light {
-    font-size: 14px;
+    padding: 5px 9px;
   }
 
   .undo-bottom {

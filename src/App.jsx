@@ -190,29 +190,6 @@ function useMatchState(matchId) {
     if (historyRef.current.length > 100) historyRef.current.shift();
   };
 
-useEffect(() => {
-  const enableFullscreen = async () => {
-    try {
-      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      }
-    } catch (e) {
-      // algunos navegadores móviles bloquean esto si no hay gesto del usuario
-    }
-  };
-
-  const handleFirstTouch = () => {
-    enableFullscreen();
-    window.removeEventListener("touchstart", handleFirstTouch);
-  };
-
-  window.addEventListener("touchstart", handleFirstTouch, { once: true });
-
-  return () => {
-    window.removeEventListener("touchstart", handleFirstTouch);
-  };
-}, []);
-
   const save = (next) => setState({ ...next, updatedAt: Date.now() });
 
   const startMatch = (config) => {
@@ -322,16 +299,19 @@ function TeamPanel({
 
       {active && <div className="service-pill">SERVICIO</div>}
 
+      <div className="sets-pill">
+        <span className="sets-pill-label">SETS</span>
+        <span className="sets-pill-value">{sets}</span>
+      </div>
+
       <div className={`big-score ${accentClass}`}>
         {pointText(pointsSelf, pointsOther, goldenPoint)}
       </div>
 
-      <div className="team-bottom">
-        <div className="games-number">{games}</div>
-        <div className="games-label">JUEGOS</div>
+      <div className="games-pill">
+        <span className="games-pill-label">JUEGOS</span>
+        <span className="games-pill-value">{games}</span>
       </div>
-
-      <div className="sets-badge">SETS {sets}</div>
     </div>
   );
 }
@@ -444,21 +424,7 @@ function ViewMode({ state, undo, scorePoint }) {
         />
 
         <div className="score-center-wrap">
-          <div className="score-pill score-pill-top">
-            <span className="score-pill-left">{state.games1}</span>
-            <span className="score-pill-sep">-</span>
-            <span className="score-pill-right">{state.games2}</span>
-          </div>
-
-          <div className="score-pill score-pill-bottom">
-            <span className="score-pill-bottom-left">{state.sets1}</span>
-            <span className="score-pill-sep-light">-</span>
-            <span className="score-pill-bottom-right">{state.sets2}</span>
-          </div>
-
-          <div className="score-timer">
-            {minutes}:{seconds}
-          </div>
+          <div className="score-timer">{minutes}:{seconds}</div>
         </div>
 
         <button
