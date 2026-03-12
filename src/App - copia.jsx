@@ -143,29 +143,19 @@ function pointCall(pointsServer, pointsReceiver, goldenPoint = true) {
   return `${calls[Math.min(pointsServer, 3)]} ${calls[Math.min(pointsReceiver, 3)]}`;
 }
 
-function spokenTeamName(name) {
-  return (name || "")
-    .replace(/\s*\/\s*/g, " y ")
-    .replace(/\s*-\s*/g, " y ")
-    .trim();
-}
-
 function buildAnnouncement(nextState, type = "point") {
   const serverIsTeam1 = nextState.server === 1;
   const serverPoints = serverIsTeam1 ? nextState.points1 : nextState.points2;
   const receiverPoints = serverIsTeam1 ? nextState.points2 : nextState.points1;
 
-  const team1Spoken = spokenTeamName(nextState.team1Name);
-  const team2Spoken = spokenTeamName(nextState.team2Name);
-
   if (type === "match") {
-    return `Juego, set y partido para ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
+    return `Juego, set y partido para ${nextState.winnerLabel}`;
   }
   if (type === "set") {
-    return `Set para ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
+    return `Set para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
   }
   if (type === "game") {
-    return `Juego de ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
+    return `Juego para ${nextState.lastWinner === 1 ? nextState.team1Name : nextState.team2Name}`;
   }
 
   return pointCall(serverPoints, receiverPoints, nextState.goldenPoint);
@@ -561,8 +551,7 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
           title="Nuevo partido"
           aria-label="Nuevo partido"
         >
-          <span className="new-match-plus">+</span>
-          <span className="new-match-text">NEW</span>
+          <NewMatchIcon />
         </button>
 
         <button
@@ -655,25 +644,23 @@ export default function App() {
     }
   }, [state.lastAnnouncement, state.voiceEnabled]);
 
-useEffect(() => {
-  if (!state.started || !action) return;
+  useEffect(() => {
+    if (!state.started || !action) return;
 
-  if (action === "team1") scorePoint(1);
-  if (action === "team2") scorePoint(2);
-  if (action === "undo") undo();
+    if (action === "team1") scorePoint(1);
+    if (action === "team2") scorePoint(2);
+    if (action === "undo") undo();
 
-  const params = new URLSearchParams(window.location.search);
-  params.delete("action");
+    const params = new URLSearchParams(window.location.search);
+    params.delete("action");
 
-  const nextUrl =
-    params.toString().length > 0
-      ? `${window.location.pathname}?${params.toString()}`
-      : window.location.pathname;
+    const nextUrl =
+      params.toString().length > 0
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
 
-  setTimeout(() => {
     window.history.replaceState({}, "", nextUrl);
-  }, 10);
-}, [action]);
+  }, [action]);
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
