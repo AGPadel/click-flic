@@ -160,7 +160,7 @@ input::placeholder {
 
 .team-top {
   position: absolute;
-  top: 34px;
+  top: 18px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -302,15 +302,17 @@ input::placeholder {
   right: 12px;
   bottom: 88px;
   z-index: 40;
-  width: 50px;
+  min-width: 62px;
   height: 50px;
   border: 1px solid #d7dde5;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   color: #475569;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
 }
@@ -319,11 +321,20 @@ input::placeholder {
   background: #ffffff;
 }
 
-.new-match-icon {
-  width: 22px;
-  height: 22px;
+.new-match-plus {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  color: #2563eb;
 }
 
+.new-match-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #475569;
+  line-height: 1;
+}
 .undo-bottom {
   position: absolute;
   left: 50%;
@@ -462,7 +473,7 @@ input::placeholder {
   }
 
   .team-top {
-    top: 38px;
+    top: 20px;
     width: 94%;
   }
 
@@ -527,14 +538,18 @@ input::placeholder {
   .new-match-side {
     right: 8px;
     bottom: 74px;
-    width: 42px;
+    min-width: 54px;
     height: 42px;
-  }
+    padding: 0 10px;
+}
 
-  .new-match-icon {
-    width: 18px;
-    height: 18px;
-  }
+  .new-match-plus {
+    font-size: 16px;
+}
+
+  .new-match-text {
+    font-size: 9px;
+}
 
   .undo-bottom {
     bottom: 8px;

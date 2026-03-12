@@ -645,6 +645,45 @@ function ControlMode({ state, scorePoint, undo, reset }) {
   );
 }
 
+function WinnerScreen({ state, reset }) {
+  const duration = state.matchStartAt
+    ? Math.floor((Date.now() - state.matchStartAt) / 1000)
+    : 0;
+
+  const minutes = String(Math.floor(duration / 60)).padStart(2, "0");
+  const seconds = String(duration % 60).padStart(2, "0");
+
+  return (
+    <div className="winner-screen">
+      <div className="winner-card">
+        <div className="winner-trophy">🏆</div>
+
+        <div className="winner-title">
+          GANADOR DEL PARTIDO
+        </div>
+
+        <div className="winner-name">
+          {state.winnerLabel.replace("/", " Y ")}
+        </div>
+
+        <div className="winner-score">
+          {state.sets1} - {state.sets2}
+        </div>
+
+        <div className="winner-time">
+          ⏱ {minutes}:{seconds}
+        </div>
+
+        <button
+          className="winner-button"
+          onClick={reset}
+        >
+          NUEVO PARTIDO
+        </button>
+      </div>
+    </div>
+  );
+}
 export default function App() {
   const { matchId, mode, action } = parseMode();
   const { state, startMatch, scorePoint, undo, reset } = useMatchState(matchId);
@@ -675,7 +714,8 @@ useEffect(() => {
   }, 10);
 }, [action]);
 
-  if (!state.started) return <StartScreen startMatch={startMatch} />;
-  if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
-  return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
+if (!state.started) return <StartScreen startMatch={startMatch} />;
+if (state.matchFinished) return <WinnerScreen state={state} reset={reset} />;
+if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;
+return <ViewMode state={state} undo={undo} scorePoint={scorePoint} resetMatch={reset} />;
 }
