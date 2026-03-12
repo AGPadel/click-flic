@@ -27,12 +27,8 @@ function emptyState() {
     lastAnnouncement: "",
     matchStartAt: null,
     updatedAt: Date.now(),
-    sideChangeMode: "odd-games", // odd-games | end-set | none
+    sideChangeMode: "odd-games",
     sidesSwapped: false,
-    inTieBreak: false,
-    tieBreak1: 0,
-    tieBreak2: 0,
-    tieBreakStartServer: 1,
   };
 }
 
@@ -53,8 +49,81 @@ function parseMode() {
   };
 }
 
-function spokenTeamName(name) {
-  return (name || "").replace(/\s*\/\s*/g, " y ").trim();
+function nextPointState(p1, p2, winner, goldenPoint = true) {
+  let points1 = p1;
+  let points2 = p2;
+  let gameWinner = null;
+
+  const atDeuce = points1 === 3 && points2 === 3;
+
+  if (goldenPoint && atDeuce) {
+    gameWinner = winner;
+    return { points1, points2, gameWinner };
+  }
+
+  if (winner === 1) {
+    if (points1 <= 2) points1 += 1;
+    else if (points1 === 3 && points2 <= 2) gameWinner = 1;
+    else if (points1 === 3 && points2 === 3) {
+      points1 = 4;
+      points2 = 3;
+    } else if (points1 === 3 && points2 === 4) {
+      points1 = 3;
+      points2 = 3;
+    } else if (points1 === 4) {
+      gameWinner = 1;
+    }
+  }
+
+  if (winner === 2) {
+    if (points2 <= 2) points2 += 1;
+    else if (points2 === 3 && points1 <= 2) gameWinner = 2;
+    else if (points2 === 3 && points1 === 3) {
+      points2 = 4;
+      points1 = 3;
+    } else if (points2 === 3 && points1 === 4) {
+      points2 = 3;
+      points1 = 3;
+    } else if (points2 === 4) {
+      gameWinner = 2;
+    }
+  }
+
+  return { points1, points2, gameWinner };
+}
+
+function resolveSet(g1, g2, s1, s2, winner) {
+  let games1 = g1;
+  let games2 = g2;
+  let sets1 = s1;
+  let sets2 = s2;
+  let setWinner = null;
+  let matchWinner = null;
+
+  if (winner === 1) games1 += 1;
+  if (winner === 2) games2 += 1;
+
+  const team1WinsSet = games1 >= 6 && games1 - games2 >= 2;
+  const team2WinsSet = games2 >= 6 && games2 - games1 >= 2;
+
+  if (team1WinsSet) {
+    sets1 += 1;
+    games1 = 0;
+    games2 = 0;
+    setWinner = 1;
+  }
+
+  if (team2WinsSet) {
+    sets2 += 1;
+    games1 = 0;
+    games2 = 0;
+    setWinner = 2;
+  }
+
+  if (sets1 === 2) matchWinner = 1;
+  if (sets2 === 2) matchWinner = 2;
+
+  return { games1, games2, sets1, sets2, setWinner, matchWinner };
 }
 
 function pointText(pointsSelf, pointsOther, goldenPoint = true) {
@@ -74,35 +143,30 @@ function pointCall(pointsServer, pointsReceiver, goldenPoint = true) {
   return `${calls[Math.min(pointsServer, 3)]} ${calls[Math.min(pointsReceiver, 3)]}`;
 }
 
+function spokenTeamName(name) {
+  return (name || "")
+    .replace(/\s*\/\s*/g, " y ")
+    .replace(/\s*-\s*/g, " y ")
+    .trim();
+}
+
 function buildAnnouncement(nextState, type = "point") {
+  const serverIsTeam1 = nextState.server === 1;
+  const serverPoints = serverIsTeam1 ? nextState.points1 : nextState.points2;
+  const receiverPoints = serverIsTeam1 ? nextState.points2 : nextState.points1;
+
   const team1Spoken = spokenTeamName(nextState.team1Name);
   const team2Spoken = spokenTeamName(nextState.team2Name);
 
   if (type === "match") {
     return `Juego, set y partido para ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
   }
-
   if (type === "set") {
     return `Set para ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
   }
-
   if (type === "game") {
     return `Juego de ${nextState.lastWinner === 1 ? team1Spoken : team2Spoken}`;
   }
-
-  if (type === "tiebreak-start") {
-    return "Tie break";
-  }
-
-  if (type === "tiebreak-point") {
-    const left = nextState.server === 1 ? nextState.tieBreak1 : nextState.tieBreak2;
-    const right = nextState.server === 1 ? nextState.tieBreak2 : nextState.tieBreak1;
-    return `${left} ${right}`;
-  }
-
-  const serverIsTeam1 = nextState.server === 1;
-  const serverPoints = serverIsTeam1 ? nextState.points1 : nextState.points2;
-  const receiverPoints = serverIsTeam1 ? nextState.points2 : nextState.points1;
 
   return pointCall(serverPoints, receiverPoints, nextState.goldenPoint);
 }
@@ -148,7 +212,7 @@ function useMatchState(matchId) {
 
   const pushHistory = () => {
     historyRef.current.push(JSON.parse(JSON.stringify(state)));
-    if (historyRef.current.length > 200) historyRef.current.shift();
+    if (historyRef.current.length > 100) historyRef.current.shift();
     persistHistory();
   };
 
@@ -165,220 +229,63 @@ function useMatchState(matchId) {
     });
   };
 
-  const applySideSwapForTieBreak = (currentState, nextTieBreak1, nextTieBreak2, currentSidesSwapped) => {
-    if (currentState.sideChangeMode !== "odd-games") return currentSidesSwapped;
+  const scorePoint = (winner) => {
+    if (state.matchFinished) return;
 
-    const totalPoints = nextTieBreak1 + nextTieBreak2;
-    const previousTotal = currentState.tieBreak1 + currentState.tieBreak2;
-
-    if (totalPoints > 0 && totalPoints % 6 === 0 && totalPoints !== previousTotal) {
-      return !currentSidesSwapped;
-    }
-
-    return currentSidesSwapped;
-  };
-
-  const scoreTieBreakPoint = (winner) => {
     pushHistory();
 
-    let nextTieBreak1 = state.tieBreak1 + (winner === 1 ? 1 : 0);
-    let nextTieBreak2 = state.tieBreak2 + (winner === 2 ? 1 : 0);
+    const pointResult = nextPointState(state.points1, state.points2, winner, state.goldenPoint);
+    let next = { ...state, ...pointResult, lastWinner: winner };
+    let type = "point";
 
-    const totalPoints = nextTieBreak1 + nextTieBreak2;
-    let nextSidesSwapped = applySideSwapForTieBreak(state, nextTieBreak1, nextTieBreak2, state.sidesSwapped);
+    if (pointResult.gameWinner) {
+      const rawGames1 = state.games1 + (pointResult.gameWinner === 1 ? 1 : 0);
+      const rawGames2 = state.games2 + (pointResult.gameWinner === 2 ? 1 : 0);
+      const totalGamesPlayedInSet = rawGames1 + rawGames2;
 
-    let next = {
-      ...state,
-      tieBreak1: nextTieBreak1,
-      tieBreak2: nextTieBreak2,
-      lastWinner: winner,
-      sidesSwapped: nextSidesSwapped,
-    };
+      const setResult = resolveSet(
+        state.games1,
+        state.games2,
+        state.sets1,
+        state.sets2,
+        pointResult.gameWinner
+      );
 
-    const winsTieBreak =
-      (nextTieBreak1 >= 7 || nextTieBreak2 >= 7) &&
-      Math.abs(nextTieBreak1 - nextTieBreak2) >= 2;
+      let nextSidesSwapped = state.sidesSwapped;
 
-    if (winsTieBreak) {
-      const tieBreakWinner = nextTieBreak1 > nextTieBreak2 ? 1 : 2;
-      const team1Games = state.games1 + (tieBreakWinner === 1 ? 1 : 0);
-      const team2Games = state.games2 + (tieBreakWinner === 2 ? 1 : 0);
-
-      let nextSets1 = state.sets1;
-      let nextSets2 = state.sets2;
-
-      if (tieBreakWinner === 1) nextSets1 += 1;
-      if (tieBreakWinner === 2) nextSets2 += 1;
-
-      let nextSidesAfterSet = nextSidesSwapped;
-      if (state.sideChangeMode === "end-set") {
-        nextSidesAfterSet = !nextSidesAfterSet;
+      if (state.sideChangeMode === "odd-games") {
+        if (totalGamesPlayedInSet % 2 === 1) {
+          nextSidesSwapped = !nextSidesSwapped;
+        }
+      } else if (state.sideChangeMode === "end-set") {
+        if (setResult.setWinner) {
+          nextSidesSwapped = !nextSidesSwapped;
+        }
       }
-
-      const matchWinner = nextSets1 === 2 ? 1 : nextSets2 === 2 ? 2 : null;
 
       next = {
         ...next,
         points1: 0,
         points2: 0,
-        games1: 0,
-        games2: 0,
-        sets1: nextSets1,
-        sets2: nextSets2,
-        inTieBreak: false,
-        tieBreak1: 0,
-        tieBreak2: 0,
-        tieBreakStartServer: state.server === 1 ? 2 : 1,
-        server: state.tieBreakStartServer === 1 ? 2 : 1,
-        matchFinished: Boolean(matchWinner),
-        winnerLabel: matchWinner
-          ? matchWinner === 1
+        games1: setResult.games1,
+        games2: setResult.games2,
+        sets1: setResult.sets1,
+        sets2: setResult.sets2,
+        server: state.server === 1 ? 2 : 1,
+        matchFinished: Boolean(setResult.matchWinner),
+        winnerLabel: setResult.matchWinner
+          ? setResult.matchWinner === 1
             ? state.team1Name
             : state.team2Name
           : "",
-        lastWinner: tieBreakWinner,
-        sidesSwapped: nextSidesAfterSet,
+        sidesSwapped: nextSidesSwapped,
       };
 
-      next.lastAnnouncement = buildAnnouncement(next, matchWinner ? "match" : "set");
-      save(next);
-      return;
+      type = setResult.matchWinner ? "match" : setResult.setWinner ? "set" : "game";
     }
-
-    next.lastAnnouncement = buildAnnouncement(next, "tiebreak-point");
-    save(next);
-  };
-
-  const scoreNormalPoint = (winner) => {
-    pushHistory();
-
-    let points1 = state.points1;
-    let points2 = state.points2;
-    let gameWinner = null;
-
-    const atDeuce = points1 === 3 && points2 === 3;
-
-    if (state.goldenPoint && atDeuce) {
-      gameWinner = winner;
-    } else if (winner === 1) {
-      if (points1 <= 2) points1 += 1;
-      else if (points1 === 3 && points2 <= 2) gameWinner = 1;
-      else if (points1 === 3 && points2 === 3) {
-        points1 = 4;
-        points2 = 3;
-      } else if (points1 === 3 && points2 === 4) {
-        points1 = 3;
-        points2 = 3;
-      } else if (points1 === 4) {
-        gameWinner = 1;
-      }
-    } else if (winner === 2) {
-      if (points2 <= 2) points2 += 1;
-      else if (points2 === 3 && points1 <= 2) gameWinner = 2;
-      else if (points2 === 3 && points1 === 3) {
-        points2 = 4;
-        points1 = 3;
-      } else if (points2 === 3 && points1 === 4) {
-        points2 = 3;
-        points1 = 3;
-      } else if (points2 === 4) {
-        gameWinner = 2;
-      }
-    }
-
-    let next = {
-      ...state,
-      points1,
-      points2,
-      lastWinner: winner,
-    };
-
-    if (!gameWinner) {
-      next.lastAnnouncement = buildAnnouncement(next, "point");
-      save(next);
-      return;
-    }
-
-    const rawGames1 = state.games1 + (gameWinner === 1 ? 1 : 0);
-    const rawGames2 = state.games2 + (gameWinner === 2 ? 1 : 0);
-
-    if (rawGames1 === 6 && rawGames2 === 6) {
-      next = {
-        ...state,
-        points1: 0,
-        points2: 0,
-        inTieBreak: true,
-        tieBreak1: 0,
-        tieBreak2: 0,
-        tieBreakStartServer: state.server,
-        lastWinner: winner,
-      };
-      next.lastAnnouncement = buildAnnouncement(next, "tiebreak-start");
-      save(next);
-      return;
-    }
-
-    let nextGames1 = rawGames1;
-    let nextGames2 = rawGames2;
-    let nextSets1 = state.sets1;
-    let nextSets2 = state.sets2;
-    let nextSidesSwapped = state.sidesSwapped;
-    let type = "game";
-
-    const team1WinsSet = nextGames1 >= 6 && nextGames1 - nextGames2 >= 2;
-    const team2WinsSet = nextGames2 >= 6 && nextGames2 - nextGames1 >= 2;
-
-    if (team1WinsSet || team2WinsSet) {
-      if (team1WinsSet) nextSets1 += 1;
-      if (team2WinsSet) nextSets2 += 1;
-
-      nextGames1 = 0;
-      nextGames2 = 0;
-      type = "set";
-
-      if (state.sideChangeMode === "end-set") {
-        nextSidesSwapped = !nextSidesSwapped;
-      }
-    } else if (state.sideChangeMode === "odd-games") {
-      const totalGamesPlayed = rawGames1 + rawGames2;
-      if (totalGamesPlayed % 2 === 1) {
-        nextSidesSwapped = !nextSidesSwapped;
-      }
-    }
-
-    const matchWinner = nextSets1 === 2 ? 1 : nextSets2 === 2 ? 2 : null;
-    if (matchWinner) type = "match";
-
-    next = {
-      ...state,
-      points1: 0,
-      points2: 0,
-      games1: nextGames1,
-      games2: nextGames2,
-      sets1: nextSets1,
-      sets2: nextSets2,
-      server: state.server === 1 ? 2 : 1,
-      matchFinished: Boolean(matchWinner),
-      winnerLabel: matchWinner
-        ? matchWinner === 1
-          ? state.team1Name
-          : state.team2Name
-        : "",
-      lastWinner: gameWinner,
-      sidesSwapped: nextSidesSwapped,
-    };
 
     next.lastAnnouncement = buildAnnouncement(next, type);
     save(next);
-  };
-
-  const scorePoint = (winner) => {
-    if (state.matchFinished) return;
-    if (state.inTieBreak) {
-      scoreTieBreakPoint(winner);
-    } else {
-      scoreNormalPoint(winner);
-    }
   };
 
   const undo = () => {
@@ -420,6 +327,20 @@ function UndoArrowIcon() {
   );
 }
 
+function NewMatchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="new-match-icon" aria-hidden="true">
+      <path
+        d="M12 5v14M5 12h14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function TeamPanel({
   players = [],
   pointsSelf,
@@ -429,7 +350,6 @@ function TeamPanel({
   accentClass,
   active,
   goldenPoint,
-  inTieBreak,
 }) {
   return (
     <div className={`team-panel ${active ? "service-active" : ""}`}>
@@ -445,7 +365,7 @@ function TeamPanel({
       </div>
 
       <div className={`big-score ${accentClass}`}>
-        {inTieBreak ? pointsSelf : pointText(pointsSelf, pointsOther, goldenPoint)}
+        {pointText(pointsSelf, pointsOther, goldenPoint)}
       </div>
 
       <div className="games-pill">
@@ -565,8 +485,8 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
     leftTeam === 1
       ? {
           players: [state.player1A, state.player1B],
-          pointsSelf: state.inTieBreak ? state.tieBreak1 : state.points1,
-          pointsOther: state.inTieBreak ? state.tieBreak2 : state.points2,
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
           games: state.games1,
           sets: state.sets1,
           active: state.server === 1,
@@ -574,8 +494,8 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
         }
       : {
           players: [state.player2A, state.player2B],
-          pointsSelf: state.inTieBreak ? state.tieBreak2 : state.points2,
-          pointsOther: state.inTieBreak ? state.tieBreak1 : state.points1,
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
           games: state.games2,
           sets: state.sets2,
           active: state.server === 2,
@@ -586,8 +506,8 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
     rightTeam === 1
       ? {
           players: [state.player1A, state.player1B],
-          pointsSelf: state.inTieBreak ? state.tieBreak1 : state.points1,
-          pointsOther: state.inTieBreak ? state.tieBreak2 : state.points2,
+          pointsSelf: state.points1,
+          pointsOther: state.points2,
           games: state.games1,
           sets: state.sets1,
           active: state.server === 1,
@@ -595,8 +515,8 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
         }
       : {
           players: [state.player2A, state.player2B],
-          pointsSelf: state.inTieBreak ? state.tieBreak2 : state.points2,
-          pointsOther: state.inTieBreak ? state.tieBreak1 : state.points1,
+          pointsSelf: state.points2,
+          pointsOther: state.points1,
           games: state.games2,
           sets: state.sets2,
           active: state.server === 2,
@@ -618,7 +538,6 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
           accentClass={leftData.accentClass}
           active={leftData.active}
           goldenPoint={state.goldenPoint}
-          inTieBreak={state.inTieBreak}
         />
 
         <TeamPanel
@@ -630,13 +549,10 @@ function ViewMode({ state, undo, scorePoint, resetMatch }) {
           accentClass={rightData.accentClass}
           active={rightData.active}
           goldenPoint={state.goldenPoint}
-          inTieBreak={state.inTieBreak}
         />
 
         <div className="score-center-wrap">
-          <div className="score-timer">
-            {state.inTieBreak ? `TIE BREAK · ${minutes}:${seconds}` : `${minutes}:${seconds}`}
-          </div>
+          <div className="score-timer">{minutes}:{seconds}</div>
         </div>
 
         <button
@@ -696,8 +612,8 @@ function ControlMode({ state, scorePoint, undo, reset }) {
               <button className="btn" onClick={() => speakText("Treinta iguales", true)}>Probar "Treinta iguales"</button>
               <button className="btn" onClick={() => speakText("Ventaja servicio", true)}>Probar "Ventaja servicio"</button>
               <button className="btn" onClick={() => speakText("Punto de oro", true)}>Probar "Punto de oro"</button>
-              <button className="btn" onClick={() => speakText(`Juego de ${spokenTeamName(state.team1Name)}`, true)}>Probar juego pareja 1</button>
-              <button className="btn" onClick={() => speakText(`Juego, set y partido para ${spokenTeamName(state.team2Name)}`, true)}>Probar final de partido</button>
+              <button className="btn" onClick={() => speakText(`Juego para ${state.team1Name}`, true)}>Probar juego pareja 1</button>
+              <button className="btn" onClick={() => speakText(`Juego, set y partido para ${state.team2Name}`, true)}>Probar final de partido</button>
             </div>
           </div>
         </div>
@@ -739,25 +655,25 @@ export default function App() {
     }
   }, [state.lastAnnouncement, state.voiceEnabled]);
 
-  useEffect(() => {
-    if (!state.started || !action) return;
+useEffect(() => {
+  if (!state.started || !action) return;
 
-    if (action === "team1") scorePoint(1);
-    if (action === "team2") scorePoint(2);
-    if (action === "undo") undo();
+  if (action === "team1") scorePoint(1);
+  if (action === "team2") scorePoint(2);
+  if (action === "undo") undo();
 
-    const params = new URLSearchParams(window.location.search);
-    params.delete("action");
+  const params = new URLSearchParams(window.location.search);
+  params.delete("action");
 
-    const nextUrl =
-      params.toString().length > 0
-        ? `${window.location.pathname}?${params.toString()}`
-        : window.location.pathname;
+  const nextUrl =
+    params.toString().length > 0
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
 
-    setTimeout(() => {
-      window.history.replaceState({}, "", nextUrl);
-    }, 10);
-  }, [action]);
+  setTimeout(() => {
+    window.history.replaceState({}, "", nextUrl);
+  }, 10);
+}, [action]);
 
   if (!state.started) return <StartScreen startMatch={startMatch} />;
   if (mode === "control") return <ControlMode state={state} scorePoint={scorePoint} undo={undo} reset={reset} />;

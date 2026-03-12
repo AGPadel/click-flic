@@ -335,7 +335,6 @@ input::placeholder {
   color: #475569;
   line-height: 1;
 }
-
 .undo-bottom {
   position: absolute;
   left: 50%;
@@ -542,15 +541,15 @@ input::placeholder {
     min-width: 54px;
     height: 42px;
     padding: 0 10px;
-  }
+}
 
   .new-match-plus {
     font-size: 16px;
-  }
+}
 
   .new-match-text {
     font-size: 9px;
-  }
+}
 
   .undo-bottom {
     bottom: 8px;
